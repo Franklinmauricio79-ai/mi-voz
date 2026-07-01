@@ -24,7 +24,7 @@
       radial-gradient(900px 500px at 100% 105%, #D9F2FF 0%, transparent 55%),
       radial-gradient(700px 500px at 90% 0%, #FFE9F4 0%, transparent 50%),
       #FFF8EE;}
-  .screen{position:fixed;inset:0;display:none;flex-direction:column;padding:max(16px,env(safe-area-inset-top)) 20px 18px;z-index:1;}
+  .screen{position:fixed;inset:0;display:none;flex-direction:column;padding:max(14px,env(safe-area-inset-top)) 18px calc(16px + env(safe-area-inset-bottom));z-index:1;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .screen.active{display:flex;animation:fadeIn .4s ease;}
   @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
   .scrollable{overflow-y:auto;-webkit-overflow-scrolling:touch;}
@@ -33,7 +33,7 @@
   .bubbles b{position:absolute;border-radius:50%;filter:blur(3px);opacity:.20;animation:drift linear infinite;}
   @keyframes drift{0%{transform:translate(0,0);}50%{transform:translate(22px,-44px);}100%{transform:translate(0,0);}}
 
-  .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:8;padding:4px 0;flex:0 0 auto;}
   .ghost-btn{border:none;background:var(--blanco);box-shadow:var(--sombra-soft);border-radius:18px;width:60px;height:60px;font-size:26px;cursor:pointer;color:var(--tinta);}
   .ghost-btn:active{transform:scale(.92);}
   .bar-title{font-size:clamp(22px,3.6vw,30px);font-weight:800;color:var(--tinta-suave);}
@@ -61,7 +61,7 @@
   @keyframes float{0%,100%{transform:translateY(0) rotate(-3deg);}50%{transform:translateY(-13px) rotate(3deg);}}
 
   /* WORLDS */
-  .worlds-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:center;padding:8px 0;}
+  .worlds-grid{flex:1 0 auto;display:grid;grid-template-columns:1fr 1fr;gap:14px;align-content:start;padding:10px 0 20px;}
   .world{border:none;border-radius:30px;cursor:pointer;color:#fff;padding:22px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 9px 0 rgba(0,0,0,.13),var(--sombra-soft);transition:transform .1s,box-shadow .1s;position:relative;overflow:hidden;}
   .world:active{transform:translateY(6px);box-shadow:0 3px 0 rgba(0,0,0,.13);}
   .world .we{font-size:clamp(46px,11vw,72px);filter:drop-shadow(0 5px 6px rgba(0,0,0,.2));}
@@ -69,22 +69,22 @@
   .world::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 16%,rgba(255,255,255,.4),transparent 46%);}
 
   /* LEARN */
-  .card-wrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;min-height:0;}
-  .stage{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;}
+  .card-wrap{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:0;padding:8px 0;}
+  .stage{display:flex;flex-direction:column;align-items:center;gap:9px;width:100%;}
   .stage.in{animation:slideIn .42s cubic-bezier(.2,1.1,.4,1);}
   @keyframes slideIn{from{transform:translateX(40px) scale(.92);opacity:0;}to{transform:none;opacity:1;}}
-  .disc{width:min(60vw,300px);height:min(60vw,300px);border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 36px rgba(58,45,40,.22), inset 0 -14px 26px rgba(0,0,0,.10), inset 0 14px 22px rgba(255,255,255,.55);animation:glow 2.6s ease-in-out infinite;}
+  .disc{width:min(52vmin,288px);height:min(52vmin,288px);border-radius:50%;position:relative;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 16px 36px rgba(58,45,40,.22), inset 0 -14px 26px rgba(0,0,0,.10), inset 0 14px 22px rgba(255,255,255,.55);animation:glow 2.6s ease-in-out infinite;}
   .disc::after{content:"";position:absolute;top:9%;left:14%;width:42%;height:30%;border-radius:50%;background:rgba(255,255,255,.5);filter:blur(4px);}
   @keyframes glow{0%,100%{transform:scale(1);}50%{transform:scale(1.035);}}
-  .disc-emoji{font-size:clamp(88px,22vw,168px);line-height:1;filter:drop-shadow(0 8px 10px rgba(0,0,0,.18));z-index:1;}
-  .disc-num{font-size:clamp(100px,26vw,184px);font-weight:800;color:#fff;line-height:.9;text-shadow:0 5px 0 rgba(0,0,0,.14);z-index:1;}
+  .disc-emoji{font-size:clamp(64px,24vmin,146px);line-height:1;filter:drop-shadow(0 8px 10px rgba(0,0,0,.18));z-index:1;}
+  .disc-num{font-size:clamp(72px,26vmin,158px);font-weight:800;color:#fff;line-height:.9;text-shadow:0 5px 0 rgba(0,0,0,.14);z-index:1;}
   .disc-img{width:84%;height:84%;border-radius:50%;object-fit:cover;z-index:1;box-shadow:0 6px 14px rgba(0,0,0,.2);}
   .squish{animation:squish .34s ease;}
   @keyframes squish{0%{transform:scale(1);}40%{transform:scale(.84) rotate(-4deg);}100%{transform:scale(1);}}
   .objects{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-width:92%;}
   .objects span{font-size:clamp(30px,7vw,54px);transition:transform .2s,filter .2s,opacity .2s;opacity:.4;}
   .objects span.lit{opacity:1;transform:scale(1.25);filter:drop-shadow(0 4px 6px rgba(0,0,0,.2));}
-  .word{font-size:clamp(44px,12vw,88px);font-weight:800;letter-spacing:-1px;color:var(--tinta);text-shadow:0 3px 0 rgba(255,255,255,.7);}
+  .word{font-size:clamp(36px,9vmin,78px);font-weight:800;letter-spacing:-1px;color:var(--tinta);text-shadow:0 3px 0 rgba(255,255,255,.7);}
   .tap-hint{font-family:'Nunito';font-weight:900;color:var(--tinta-suave);font-size:14px;opacity:.85;}
   .candy{border:none;cursor:pointer;border-radius:30px;color:#fff;font-family:'Baloo 2';font-weight:800;font-size:clamp(22px,4.4vw,32px);padding:17px 42px;display:flex;align-items:center;gap:12px;position:relative;transition:transform .08s, box-shadow .08s;}
   .candy:active{transform:translateY(7px);}
@@ -199,6 +199,9 @@
   .emoji-pick button.sel{border-color:var(--coral);background:#FFE9DE;transform:scale(1.05);}
   .add-btn{margin-top:14px;width:100%;border:none;background:linear-gradient(150deg,#54D49A,#22A874);color:#fff;font-family:'Baloo 2';font-weight:800;font-size:18px;padding:14px;border-radius:16px;cursor:pointer;box-shadow:0 6px 0 #17805A;}
   .add-btn:active{transform:translateY(4px);box-shadow:0 2px 0 #17805A;}
+  .wsel{width:100%;font-family:'Baloo 2';font-weight:700;font-size:16px;padding:12px;border-radius:14px;border:2px solid var(--linea);background:#FFF8EE;color:var(--tinta);}
+  .world-item{display:flex;align-items:center;gap:10px;background:#FFF8EE;border-radius:14px;padding:10px 12px;margin-bottom:8px;}
+  .world-item .we{font-size:26px;}.world-item .nm{flex:1;font-weight:700;}
   .custom-item{background:#fff;border-radius:16px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--sombra-soft);display:flex;align-items:center;gap:12px;}
   .custom-item .em{font-size:32px;width:44px;text-align:center;}
   .custom-item img.em{width:44px;height:44px;border-radius:12px;object-fit:cover;}
@@ -341,12 +344,23 @@
       <div id="recList" style="margin-top:12px"></div>
     </div>
     <div class="ptab" id="ptab-nueva">
-      <p class="hint">Crea tus propias palabras. Aparecen en el mundo "✨ Mis palabras". Después ponles foto y voz en las pestañas 📷 y 🎙️.</p>
+      <p class="hint">Crea tus palabras y elige a qué mundo van. También puedes crear mundos nuevos (ej. "Casa" para las partes de la casa).</p>
       <div class="add-form">
-        <input id="newWordText" maxlength="18" placeholder="Escribe la palabra (ej. tetero)">
-        <div class="pick-lbl">Elige un dibujo:</div>
+        <div class="pick-lbl" style="margin-top:0">✏️ Nueva palabra</div>
+        <input id="newWordText" maxlength="18" placeholder="Escribe la palabra (ej. sofá)">
+        <div class="pick-lbl">Dibujo:</div>
         <div class="emoji-pick" id="emojiPick"></div>
+        <div class="pick-lbl">¿A qué mundo va?</div>
+        <select id="wordWorld" class="wsel"></select>
         <button class="add-btn" id="addWordBtn">➕ Agregar palabra</button>
+      </div>
+      <div class="add-form" style="margin-top:14px">
+        <div class="pick-lbl" style="margin-top:0">🌍 Crear un mundo nuevo</div>
+        <input id="newWorldName" maxlength="16" placeholder="Nombre del mundo (ej. Casa)">
+        <div class="pick-lbl">Dibujo del mundo:</div>
+        <div class="emoji-pick" id="emojiPickWorld"></div>
+        <button class="add-btn" id="addWorldBtn" style="background:linear-gradient(150deg,#B988EC,#8A4FD6);box-shadow:0 6px 0 #6C39AE">🌍 Crear mundo</button>
+        <div id="worldsList" style="margin-top:12px"></div>
       </div>
       <div id="customList" style="margin-top:16px"></div>
     </div>
@@ -423,6 +437,13 @@ var ALL_WORDS=[]; WORLDS.forEach(function(w){w.items.forEach(function(it){ALL_WO
 var CUSTOM_WORDS=load('mv_custom',[]);
 var customTs=load('mv_customTs',0);
 function wordsForMedia(){var a=[];WORLDS.forEach(function(w){w.items.forEach(function(it){a.push(it);});});return a.concat(CUSTOM_WORDS);}
+var CUSTOM_WORLDS=load('mv_worlds',[]);
+var worldsTs=load('mv_worldsTs',0);
+var WORLD_GRADS=['linear-gradient(150deg,#7ED0F5,#2E8FD6)','linear-gradient(150deg,#8AE0B4,#22A874)','linear-gradient(150deg,#FFB27A,#FF6A3D)','linear-gradient(150deg,#C6A0F0,#8A4FD6)','linear-gradient(150deg,#FFB0CD,#FF6A9A)','linear-gradient(150deg,#FFD98A,#F49A24)'];
+function builtinWorld(id){for(var i=0;i<WORLDS.length;i++)if(WORLDS[i].id===id)return WORLDS[i];return null;}
+function itemsForWorld(id){if(id==='mios')return CUSTOM_WORDS.filter(function(w){return (w.world||'mios')==='mios';});
+  var bw=builtinWorld(id),extra=CUSTOM_WORDS.filter(function(w){return w.world===id;});return bw?bw.items.concat(extra):extra;}
+function miosCount(){return CUSTOM_WORDS.filter(function(w){return (w.world||'mios')==='mios';}).length;}
 var EMOJIS='😀 😍 🥰 😴 😋 🤗 👶 👧 👦 👩 👨 👵 👴 👪 🐶 🐱 🐭 🐰 🦊 🐻 🐼 🐨 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🐦 🦆 🦉 🐴 🦄 🐝 🐢 🐟 🐬 🦋 🍎 🍌 🍇 🍓 🍉 🍪 🍞 🥛 🍼 🧃 🍕 🍦 🍭 🥕 ⚽ 🏀 🎈 🎁 🧸 🚗 🚌 🚂 ✈️ 🚀 🏠 🛏️ 🌈 ⭐ ❤️ 💧 🛁 🚽 🦷 👕 👟 🧦 🎵 📖'.split(' ');
 var NUM_TXT=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
 var NUMEROS=[]; for(var n=1;n<=10;n++)NUMEROS.push({id:'n'+n,n:n,t:NUM_TXT[n],e:'🍎'});
@@ -496,7 +517,8 @@ function startSync(){updateCloudBadge();
     }});
   },function(){cloudState='fail';updateCloudBadge();});}catch(e){cloudState='fail';updateCloudBadge();}
   try{fbdb.ref(PROG_PATH).on('value',function(snap){var v=snap.val();if(v&&(v.stars||0)>(prog.stars||0)){prog.stars=v.stars;prog.prizesShown=v.prizesShown||prog.prizesShown;save('mv_prog',prog);updateStars();}});}catch(e){}
-  try{fbdb.ref('mivoz/custom').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>customTs){CUSTOM_WORDS=v.list||[];customTs=v.ts;save('mv_custom',CUSTOM_WORDS);save('mv_customTs',customTs);if(parentOpen){buildCustomList();buildFotoList();buildRecList();}}});}catch(e){}
+  try{fbdb.ref('mivoz/custom').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>customTs){CUSTOM_WORDS=v.list||[];customTs=v.ts;save('mv_custom',CUSTOM_WORDS);save('mv_customTs',customTs);renderWorlds();if(parentOpen){buildCustomList();buildFotoList();buildRecList();buildWorldSelect();}}});}catch(e){}
+  try{fbdb.ref('mivoz/worlds').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>worldsTs){CUSTOM_WORLDS=v.list||[];worldsTs=v.ts;save('mv_worlds',CUSTOM_WORLDS);save('mv_worldsTs',worldsTs);renderWorlds();if(parentOpen){buildWorldSelect();buildWorldsList();buildCustomList();}}});}catch(e){}
 }
 function pushProg(){if(!fbReady)return;try{fbdb.ref(PROG_PATH).set({stars:prog.stars||0,prizesShown:prog.prizesShown||0,ts:Date.now()});}catch(e){}}
 function updateCloudBadge(){var el=document.getElementById('cloudBadge');if(!el)return;
@@ -544,23 +566,25 @@ document.getElementById('learnBack').addEventListener('click',function(){if(mode
 
 /* ============ MUNDOS ============ */
 function renderWorlds(){var g=document.getElementById('worldsGrid'),h='';
-  WORLDS.forEach(function(w,i){h+='<button class="world" data-w="'+i+'" style="background:'+w.grad+'"><span class="we">'+w.e+'</span><span class="wl">'+w.name+'</span></button>';});
-  h+='<button class="world" data-w="custom" style="background:linear-gradient(150deg,#FFD15C,#F49A24)"><span class="we">✨</span><span class="wl">Mis palabras</span></button>';
+  WORLDS.forEach(function(w){h+='<button class="world" data-w="b:'+w.id+'" style="background:'+w.grad+'"><span class="we">'+w.e+'</span><span class="wl">'+w.name+'</span></button>';});
+  CUSTOM_WORLDS.forEach(function(w){h+='<button class="world" data-w="c:'+w.id+'" style="background:'+(w.grad||'linear-gradient(150deg,#B988EC,#8A4FD6)')+'"><span class="we">'+w.e+'</span><span class="wl">'+w.name+'</span></button>';});
+  if(miosCount())h+='<button class="world" data-w="mios" style="background:linear-gradient(150deg,#FFD15C,#F49A24)"><span class="we">✨</span><span class="wl">Mis palabras</span></button>';
   g.innerHTML=h;}
 document.getElementById('worldsGrid').addEventListener('click',function(e){var b=e.target.closest('[data-w]');if(!b)return;
-  var w=b.getAttribute('data-w');if(w==='custom')startCustom();else startWorld(WORLDS[+w]);});
+  var w=b.getAttribute('data-w');
+  if(w==='mios'){openWords('mios','Mis palabras');}
+  else if(w.indexOf('b:')===0){var id=w.slice(2),bw=builtinWorld(id);openWords(id,bw?bw.name:'Palabras');}
+  else if(w.indexOf('c:')===0){var id2=w.slice(2),cw=null;CUSTOM_WORLDS.forEach(function(x){if(x.id===id2)cw=x;});openWords(id2,cw?cw.name:'Mundo');}});
 
 /* ============ APRENDIZAJE ============ */
 var mode='palabras',list=[],idx=0;
-function startWorld(w){warmAudio();mode='palabras';list=w.items;idx=0;
-  document.getElementById('learnTitle').textContent=w.name;document.getElementById('learnBack').textContent='◀';
+function openWords(id,name){var items=itemsForWorld(id);
+  if(!items.length){toast('Ese mundo aún no tiene palabras. Agrégalas en 🔒 → ➕ Palabras');return;}
+  warmAudio();mode='palabras';list=items;idx=0;
+  document.getElementById('learnTitle').textContent=name||'Palabras';document.getElementById('learnBack').textContent='◀';
   preloadMedia(list);show('learn');renderCard();}
 function startNumbers(){warmAudio();mode='numeros';list=NUMEROS;idx=0;
   document.getElementById('learnTitle').textContent='Números';document.getElementById('learnBack').textContent='🏠';
-  preloadMedia(list);show('learn');renderCard();}
-function startCustom(){if(!CUSTOM_WORDS.length){toast('Agrega palabras en Modo papá 🔒 → ➕ Palabras');return;}
-  warmAudio();mode='palabras';list=CUSTOM_WORDS;idx=0;
-  document.getElementById('learnTitle').textContent='Mis palabras';document.getElementById('learnBack').textContent='◀';
   preloadMedia(list);show('learn');renderCard();}
 function renderCard(){
   var it=list[idx],stage=document.getElementById('stage'),grad=DISC_GRADS[idx%DISC_GRADS.length],inner='';
@@ -670,7 +694,7 @@ document.getElementById('pinKeys').addEventListener('click',function(e){var b=e.
   if(pinBuf.length<4){pinBuf+=b.textContent;renderPin();}
   if(pinBuf.length===4){if(pinBuf===cfg.pin){document.getElementById('pinOverlay').classList.remove('on');openParent();}
     else{document.getElementById('pinErr').textContent='PIN incorrecto';pinBuf='';setTimeout(renderPin,400);}}});
-function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();buildCustomList();renderEmojiPick();updateProgUI();updateCloudBadge();}
+function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();buildCustomList();buildWorldsList();buildWorldSelect();renderEmojiPick();renderWorldEmojiPick();updateProgUI();updateCloudBadge();}
 document.getElementById('parentExit').addEventListener('click',function(){parentOpen=false;show('home');refreshHome();});
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on');});
@@ -739,29 +763,55 @@ document.getElementById('cropOk').addEventListener('click',function(){var OUT=50
   if(cv.toBlob)cv.toBlob(function(b){done(b);},'image/jpeg',0.85);
   else{try{var d=cv.toDataURL('image/jpeg',0.85),bin=atob(d.split(',')[1]),ar=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)ar[i]=bin.charCodeAt(i);done(new Blob([ar],{type:'image/jpeg'}));}catch(e){done(null);}}});
 
-/* ============ MIS PALABRAS ============ */
-var selEmoji=EMOJIS[0];
-function renderEmojiPick(){var g=document.getElementById('emojiPick');if(!g)return;
-  g.innerHTML=EMOJIS.map(function(em){return '<button class="'+(em===selEmoji?'sel':'')+'" data-em="'+em+'">'+em+'</button>';}).join('');}
-document.getElementById('emojiPick').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;selEmoji=b.getAttribute('data-em');renderEmojiPick();});
+/* ============ MIS PALABRAS Y MUNDOS ============ */
+var selEmoji=EMOJIS[0], selWorldEmoji='🏠';
+function renderPick(containerId,selected,setter){var g=document.getElementById(containerId);if(!g)return;
+  g.innerHTML=EMOJIS.map(function(em){return '<button class="'+(em===selected()?'sel':'')+'" data-em="'+em+'">'+em+'</button>';}).join('');
+  g.onclick=function(e){var b=e.target.closest('button');if(!b)return;setter(b.getAttribute('data-em'));renderPick(containerId,selected,setter);};}
+function renderEmojiPick(){renderPick('emojiPick',function(){return selEmoji;},function(v){selEmoji=v;});}
+function renderWorldEmojiPick(){renderPick('emojiPickWorld',function(){return selWorldEmoji;},function(v){selWorldEmoji=v;});}
+function buildWorldSelect(){var s=document.getElementById('wordWorld');if(!s)return;var h='';
+  WORLDS.forEach(function(w){h+='<option value="'+w.id+'">'+w.e+' '+w.name+'</option>';});
+  CUSTOM_WORLDS.forEach(function(w){h+='<option value="'+w.id+'">'+w.e+' '+w.name+'</option>';});
+  h+='<option value="mios">✨ Mis palabras</option>';s.innerHTML=h;}
 document.getElementById('addWordBtn').addEventListener('click',function(){var txt=(document.getElementById('newWordText').value||'').trim();
   if(!txt){toast('Escribe la palabra');return;}
-  CUSTOM_WORDS.push({id:'c_'+Date.now(),t:txt,e:selEmoji});saveCustom();
-  document.getElementById('newWordText').value='';buildCustomList();buildFotoList();buildRecList();
-  toast('¡Palabra agregada! Ponle foto y voz en 📷 y 🎙️');});
+  var world=document.getElementById('wordWorld').value||'mios';
+  CUSTOM_WORDS.push({id:'c_'+Date.now(),t:txt,e:selEmoji,world:world});saveCustom();
+  document.getElementById('newWordText').value='';buildCustomList();buildFotoList();buildRecList();renderWorlds();
+  toast('¡"'+txt+'" agregada! Ponle foto y voz en 📷 y 🎙️');});
+document.getElementById('addWorldBtn').addEventListener('click',function(){var nm=(document.getElementById('newWorldName').value||'').trim();
+  if(!nm){toast('Escribe el nombre del mundo');return;}
+  var grad=WORLD_GRADS[CUSTOM_WORLDS.length%WORLD_GRADS.length];
+  CUSTOM_WORLDS.push({id:'w_'+Date.now(),name:nm,e:selWorldEmoji,grad:grad});saveWorlds();
+  document.getElementById('newWorldName').value='';buildWorldSelect();buildWorldsList();renderWorlds();
+  toast('¡Mundo "'+nm+'" creado! Ya puedes agregarle palabras arriba');});
+function buildWorldsList(){var el=document.getElementById('worldsList');if(!el)return;
+  if(!CUSTOM_WORLDS.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="pick-lbl">Tus mundos:</div>'+CUSTOM_WORLDS.map(function(w){
+    return '<div class="world-item" data-id="'+w.id+'"><span class="we">'+w.e+'</span><div class="nm">'+w.name+'</div><button class="mini del" data-a="delw">🗑️</button></div>';}).join('');}
+document.getElementById('worldsList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.getAttribute('data-a')!=='delw')return;
+  var id=b.closest('.world-item').getAttribute('data-id');
+  CUSTOM_WORLDS=CUSTOM_WORLDS.filter(function(w){return w.id!==id;});
+  CUSTOM_WORDS.forEach(function(w){if(w.world===id)w.world='mios';});
+  saveWorlds();saveCustom();buildWorldSelect();buildWorldsList();buildCustomList();renderWorlds();toast('Mundo borrado (sus palabras pasaron a "Mis palabras")');});
+function worldNameOf(id){var bw=builtinWorld(id);if(bw)return bw.e+' '+bw.name;if(!id||id==='mios')return '✨ Mis palabras';
+  var r='';CUSTOM_WORLDS.forEach(function(w){if(w.id===id)r=w.e+' '+w.name;});return r||'✨ Mis palabras';}
 function buildCustomList(){var el=document.getElementById('customList');if(!el)return;
   if(!CUSTOM_WORDS.length){el.innerHTML='<div class="custom-empty">Aún no tienes palabras propias.<br>Agrega la primera arriba ⤴</div>';return;}
   listKeys().then(function(keys){
-    el.innerHTML=CUSTOM_WORDS.map(function(it){var fk='foto_'+it.id,has=keys.indexOf(fk)>=0;
+    el.innerHTML='<div class="pick-lbl">Tus palabras:</div>'+CUSTOM_WORDS.map(function(it){var fk='foto_'+it.id,has=keys.indexOf(fk)>=0;
       var em=has?'<img class="em" id="cth_'+it.id+'">':'<span class="em">'+it.e+'</span>';
-      return '<div class="custom-item" data-id="'+it.id+'">'+em+'<div class="nm">'+it.t+'</div><button class="mini del" data-a="delc">🗑️</button></div>';}).join('');
+      return '<div class="custom-item" data-id="'+it.id+'">'+em+'<div class="nm">'+it.t+'<small style="display:block;font-family:Nunito;font-weight:800;font-size:11px;color:var(--tinta-suave)">'+worldNameOf(it.world)+'</small></div><button class="mini del" data-a="delc">🗑️</button></div>';}).join('');
     CUSTOM_WORDS.forEach(function(it){var fk='foto_'+it.id;if(keys.indexOf(fk)>=0){getBlob(fk).then(function(b){var im=document.getElementById('cth_'+it.id);if(im&&b)im.src=URL.createObjectURL(b);});}});});}
 document.getElementById('customList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.getAttribute('data-a')!=='delc')return;
   var id=b.closest('.custom-item').getAttribute('data-id');
   CUSTOM_WORDS=CUSTOM_WORDS.filter(function(w){return w.id!==id;});saveCustom();
-  delMedia('foto_'+id);delMedia('voz_'+id);buildCustomList();buildFotoList();buildRecList();toast('Palabra borrada');});
+  delMedia('foto_'+id);delMedia('voz_'+id);buildCustomList();buildFotoList();buildRecList();renderWorlds();toast('Palabra borrada');});
 function saveCustom(){save('mv_custom',CUSTOM_WORDS);customTs=Date.now();save('mv_customTs',customTs);pushCustom();}
+function saveWorlds(){save('mv_worlds',CUSTOM_WORLDS);worldsTs=Date.now();save('mv_worldsTs',worldsTs);pushWorlds();}
 function pushCustom(){if(!fbReady)return;try{fbdb.ref('mivoz/custom').set({list:CUSTOM_WORDS,ts:customTs});}catch(e){}}
+function pushWorlds(){if(!fbReady)return;try{fbdb.ref('mivoz/worlds').set({list:CUSTOM_WORLDS,ts:worldsTs});}catch(e){}}
 
 /* ============ GRABACIÓN ============ */
 function buildRecList(){listKeys().then(function(keys){var html='';
