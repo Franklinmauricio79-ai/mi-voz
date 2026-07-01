@@ -165,6 +165,10 @@
   .tabs button{flex:1;border:none;background:transparent;padding:11px 4px;border-radius:13px;font-family:'Baloo 2';font-weight:600;font-size:13px;cursor:pointer;color:var(--tinta-suave);white-space:nowrap;}
   .tabs button.on{background:var(--coral);color:#fff;font-weight:800;}
   .ptab{display:none;}.ptab.on{display:block;}
+  .cloud-badge{margin:12px 0 0;padding:10px 14px;border-radius:14px;font-family:'Nunito';font-weight:800;font-size:13px;text-align:center;}
+  .cloud-badge.conectando{background:#FFF3E0;color:#B07A2E;}
+  .cloud-badge.ok{background:#E6F7EE;color:#1E8F5E;}
+  .cloud-badge.fail{background:#FDE7E1;color:#C0492E;}
   .grp-h{font-weight:800;color:var(--tinta-suave);font-size:14px;margin:14px 4px 8px;text-transform:uppercase;letter-spacing:.5px;}
   .rec-item{background:#fff;border-radius:18px;padding:12px 14px;margin-bottom:10px;box-shadow:var(--sombra-soft);display:flex;align-items:center;gap:10px;}
   .rec-item .em{font-size:32px;width:42px;text-align:center;}
@@ -294,6 +298,7 @@
     <div class="bar-title">Modo papá</div>
     <div style="width:60px"></div>
   </div>
+  <div class="cloud-badge conectando" id="cloudBadge">☁️ Conectando…</div>
   <div class="tabs">
     <button class="on" data-ptab="fotos">📷 Fotos</button>
     <button data-ptab="voces">🎙️ Voces</button>
@@ -368,6 +373,13 @@ var BUBBLE_COLS=['#FF6A3D','#FFC23C','#2FC58A','#3D9BE9','#9B6BD6','#FF7AA8'];
 var STICKERS=['🦋','🐢','🐙','🦄','🐝','🐬','🦉','🦖','🐧','🐨','🦩','🐳','🌈','🚀','🎈','🍩','🎸','🏰'];
 function prizeCost(i){return (i+1)*3;} // estrellas para desbloquear el premio i
 
+/* ============ CONFIG NUBE (Firebase) ============ */
+var FBCONFIG={apiKey:"AIzaSyCTbQk8uKUaP7cmkmkMnxbfaIqTTWu-G3k",authDomain:"checklist-campo-fm.firebaseapp.com",databaseURL:"https://checklist-campo-fm-default-rtdb.firebaseio.com",projectId:"checklist-campo-fm",storageBucket:"checklist-campo-fm.firebasestorage.app",messagingSenderId:"907283891555",appId:"1:907283891555:web:43f0e510f500f8dd3fff56"};
+var MEDIA_PATH='mivoz/media', PROG_PATH='mivoz/prog';
+var fbdb=null, fbReady=false, cloudState='conectando', parentOpen=false;
+var mediaTs=load('mv_mediaTs',{});
+function saveTs(){save('mv_mediaTs',mediaTs);}
+
 /* ============ PERSISTENCIA ============ */
 var LS_OK=(function(){try{localStorage.setItem('_t','1');localStorage.removeItem('_t');return true;}catch(e){return false;}})();
 var mem={};
@@ -393,6 +405,44 @@ function clearURLs(){var k;for(k in audioURL){try{URL.revokeObjectURL(audioURL[k
 function preloadMedia(items){clearURLs();items.forEach(function(it){
   getBlob('voz_'+it.id).then(function(b){if(b){try{audioURL['voz_'+it.id]=URL.createObjectURL(b);}catch(e){}}});
   getBlob('foto_'+it.id).then(function(b){if(b){try{fotoURL['foto_'+it.id]=URL.createObjectURL(b);}catch(e){}}});});}
+
+/* ============ NUBE / SINCRONIZACIÓN ============ */
+function loadScript(src){return new Promise(function(res,rej){var s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s);});}
+function initFirebase(){
+  var base='https://www.gstatic.com/firebasejs/10.12.2/';
+  loadScript(base+'firebase-app-compat.js')
+    .then(function(){return loadScript(base+'firebase-database-compat.js');})
+    .then(function(){try{firebase.initializeApp(FBCONFIG);fbdb=firebase.database();fbReady=true;startSync();}catch(e){cloudState='fail';updateCloudBadge();}})
+    .catch(function(){cloudState='fail';updateCloudBadge();});
+}
+function blobToB64(blob){return new Promise(function(res){var fr=new FileReader();fr.onload=function(){res((fr.result+'').split(',')[1]||null);};fr.onerror=function(){res(null);};fr.readAsDataURL(blob);});}
+function b64ToBlob(b64,type){try{var bin=atob(b64),len=bin.length,arr=new Uint8Array(len);for(var i=0;i<len;i++)arr[i]=bin.charCodeAt(i);return new Blob([arr],{type:type||'application/octet-stream'});}catch(e){return null;}}
+function refreshLocalURL(key,blob){try{var u=URL.createObjectURL(blob);
+  if(key.indexOf('voz_')===0)audioURL[key]=u;else if(key.indexOf('foto_')===0)fotoURL[key]=u;
+  if(document.getElementById('learn').classList.contains('active')&&list[idx]&&('voz_'+list[idx].id===key||'foto_'+list[idx].id===key))renderCard();
+}catch(e){}}
+/* guardar media: local SIEMPRE + nube si disponible */
+function saveMedia(key,blob){return putBlob(key,blob).then(function(){refreshLocalURL(key,blob);
+  if(fbReady){blobToB64(blob).then(function(b64){if(!b64)return;var ts=Date.now();mediaTs[key]=ts;saveTs();
+    try{fbdb.ref(MEDIA_PATH+'/'+key).set({data:b64,type:blob.type||'',ts:ts}).then(function(){toast('☁️ Guardado en la nube');}).catch(function(){toast('Guardado (sin nube)');});}catch(e){}});}
+  else toast('Guardado en este dispositivo');
+});}
+function delMedia(key){mediaTs[key]=Date.now();saveTs();
+  if(fbReady){try{fbdb.ref(MEDIA_PATH+'/'+key).remove();}catch(e){}}
+  return delBlob(key);}
+function startSync(){updateCloudBadge();
+  try{fbdb.ref(MEDIA_PATH).on('value',function(snap){var val=snap.val()||{};cloudState='ok';updateCloudBadge();
+    Object.keys(val).forEach(function(key){var it=val[key];if(it&&it.data&&(it.ts||0)>(mediaTs[key]||0)){
+      var blob=b64ToBlob(it.data,it.type);if(!blob)return;mediaTs[key]=it.ts||Date.now();saveTs();
+      putBlob(key,blob).then(function(){refreshLocalURL(key,blob);if(parentOpen){buildFotoList();buildRecList();}});
+    }});
+  },function(){cloudState='fail';updateCloudBadge();});}catch(e){cloudState='fail';updateCloudBadge();}
+  try{fbdb.ref(PROG_PATH).on('value',function(snap){var v=snap.val();if(v&&(v.stars||0)>(prog.stars||0)){prog.stars=v.stars;prog.prizesShown=v.prizesShown||prog.prizesShown;save('mv_prog',prog);updateStars();}});}catch(e){}
+}
+function pushProg(){if(!fbReady)return;try{fbdb.ref(PROG_PATH).set({stars:prog.stars||0,prizesShown:prog.prizesShown||0,ts:Date.now()});}catch(e){}}
+function updateCloudBadge(){var el=document.getElementById('cloudBadge');if(!el)return;
+  var m={conectando:'☁️ Conectando…',ok:'☁️ Sincronizado — se ve en todos tus dispositivos',fail:'⚠️ Sin conexión a la nube (revisa las reglas de Firebase)'};
+  el.textContent=m[cloudState]||'';el.className='cloud-badge '+cloudState;}
 
 /* ============ DESBLOQUEO AUDIO ============ */
 var actx=null,warmed=false;
@@ -497,7 +547,7 @@ function showTurn(){var t=document.getElementById('turn');if(!t)return;t.style.d
   document.getElementById('cheerBtn').addEventListener('click',celebrate);prog.reps=(prog.reps||0)+1;save('mv_prog',prog);}
 function celebrate(){
   var before=unlockedCount();
-  prog.stars=(prog.stars||0)+1;save('mv_prog',prog);updateStars();successSound();mascot('cheer');
+  prog.stars=(prog.stars||0)+1;save('mv_prog',prog);pushProg();updateStars();successSound();mascot('cheer');
   speakText('¡Muy bien!');showBigStar();confettiBurst();
   var after=unlockedCount();
   setTimeout(function(){
@@ -514,7 +564,7 @@ function showPrize(i){
   document.getElementById('popEmoji').textContent=STICKERS[i];
   document.getElementById('popMsg').textContent='¡Ganaste '+(i+1)+' de '+STICKERS.length+' amiguitos!';
   document.getElementById('prizePop').classList.add('on');
-  prog.prizesShown=unlockedCount();save('mv_prog',prog);
+  prog.prizesShown=unlockedCount();save('mv_prog',prog);pushProg();
   try{successSound();}catch(e){}
 }
 document.getElementById('popOk').addEventListener('click',function(){
@@ -555,8 +605,8 @@ document.getElementById('pinKeys').addEventListener('click',function(e){var b=e.
   if(pinBuf.length<4){pinBuf+=b.textContent;renderPin();}
   if(pinBuf.length===4){if(pinBuf===cfg.pin){document.getElementById('pinOverlay').classList.remove('on');openParent();}
     else{document.getElementById('pinErr').textContent='PIN incorrecto';pinBuf='';setTimeout(renderPin,400);}}});
-function openParent(){show('parent');buildFotoList();buildRecList();updateProgUI();}
-document.getElementById('parentExit').addEventListener('click',function(){show('home');refreshHome();});
+function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();updateProgUI();updateCloudBadge();}
+document.getElementById('parentExit').addEventListener('click',function(){parentOpen=false;show('home');refreshHome();});
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on');});
   document.querySelectorAll('.ptab').forEach(function(x){x.classList.remove('on');});
@@ -584,10 +634,10 @@ function buildFotoList(){listKeys().then(function(keys){var html='';
 document.getElementById('fotoList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   var item=b.closest('.rec-item'),key=item.getAttribute('data-key'),a=b.getAttribute('data-a');
   if(a==='cam'){pendingPhotoKey=key;document.getElementById('fotoInput').value='';document.getElementById('fotoInput').click();}
-  else if(a==='del'){delBlob(key).then(function(){toast('Foto borrada');buildFotoList();});}});
+  else if(a==='del'){delMedia(key).then(function(){toast('Foto borrada');buildFotoList();});}});
 document.getElementById('fotoInput').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f||!pendingPhotoKey)return;
   toast('Procesando foto…');processImage(f,function(blob){if(!blob){toast('No se pudo leer la foto');return;}
-    putBlob(pendingPhotoKey,blob).then(function(ok){toast(ok?'¡Foto guardada!':'No se pudo guardar');buildFotoList();});});});
+    saveMedia(pendingPhotoKey,blob).then(function(){buildFotoList();});});});
 
 /* ============ GRABACIÓN ============ */
 function buildRecList(){listKeys().then(function(keys){var html='';
@@ -606,7 +656,7 @@ var mediaRec=null,chunks=[],recBtn=null,recKey=null;
 document.getElementById('recList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   var item=b.closest('.rec-item'),key=item.getAttribute('data-key'),txt=item.getAttribute('data-txt'),a=b.getAttribute('data-a');
   if(a==='play'){getBlob(key).then(function(blob){if(blob){try{playURL(URL.createObjectURL(blob));}catch(e){speakText(txt);}}else speakText(txt);});}
-  else if(a==='del'){delBlob(key).then(function(){toast('Voz borrada');buildRecList();});}
+  else if(a==='del'){delMedia(key).then(function(){toast('Voz borrada');buildRecList();});}
   else if(a==='rec'){if(mediaRec&&mediaRec.state==='recording')stopRec();else startRec(b,key);}});
 function startRec(btn,key){if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Micrófono no disponible aquí.');return;}
   navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
@@ -614,7 +664,7 @@ function startRec(btn,key){if(!navigator.mediaDevices||!navigator.mediaDevices.g
     chunks=[];recBtn=btn;recKey=key;btn.classList.add('live');btn.textContent='⏹️';
     mediaRec.ondataavailable=function(ev){if(ev.data.size>0)chunks.push(ev.data);};
     mediaRec.onstop=function(){var blob=new Blob(chunks,{type:chunks[0]?chunks[0].type:'audio/webm'});
-      putBlob(recKey,blob).then(function(ok){stream.getTracks().forEach(function(t){t.stop();});toast(ok?'¡Voz guardada!':'No se pudo guardar');buildRecList();});};
+      saveMedia(recKey,blob).then(function(){stream.getTracks().forEach(function(t){t.stop();});buildRecList();});};
     mediaRec.start();toast('Grabando… toca otra vez para parar');}).catch(function(){toast('Permiso de micrófono denegado');});}
 function stopRec(){try{if(mediaRec&&mediaRec.state==='recording')mediaRec.stop();}catch(e){}if(recBtn){recBtn.classList.remove('live');recBtn.textContent='🎙️';}}
 
@@ -628,7 +678,7 @@ rateSel.addEventListener('input',function(e){cfg.rate=parseFloat(e.target.value)
 rateSel.value=cfg.rate;document.getElementById('rateVal').textContent=cfg.rate.toFixed(2);
 document.getElementById('savePin').addEventListener('click',function(){var v=document.getElementById('newPin').value;
   if(/^\d{4}$/.test(v)){cfg.pin=v;save('mv_cfg',cfg);document.getElementById('newPin').value='';toast('PIN actualizado');}else toast('El PIN debe tener 4 números');});
-document.getElementById('resetBtn').addEventListener('click',function(){prog={stars:0,reps:0,lastDay:new Date().toDateString(),streak:1,prizesShown:0};save('mv_prog',prog);updateStars();updateProgUI();toast('Avance reiniciado');});
+document.getElementById('resetBtn').addEventListener('click',function(){prog={stars:0,reps:0,lastDay:new Date().toDateString(),streak:1,prizesShown:0};save('mv_prog',prog);pushProg();updateStars();updateProgUI();toast('Avance reiniciado');});
 function updateProgUI(){document.getElementById('pStars').textContent=prog.stars||0;document.getElementById('pReps').textContent=prog.reps||0;
   document.getElementById('pDays').textContent=prog.streak||0;document.getElementById('pPrizes').textContent=unlockedCount();}
 
@@ -642,7 +692,7 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
   w.innerHTML=h;})();
 
 /* ============ INIT ============ */
-openDB().then(function(){updateStars();});
+openDB().then(function(){updateStars();initFirebase();});
 updateStars();
 </script>
 </body>
