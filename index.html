@@ -48,13 +48,14 @@
   .pills{display:flex;gap:10px;margin-top:16px;}
   .pill{background:var(--blanco);border:none;border-radius:999px;padding:11px 22px;box-shadow:var(--sombra-soft);font-size:clamp(17px,3vw,22px);font-weight:800;display:flex;gap:8px;align-items:center;cursor:pointer;color:var(--tinta);font-family:'Baloo 2';}
   .pill:active{transform:scale(.94);}
-  .menu{flex:1;display:flex;gap:26px;align-items:center;justify-content:center;flex-wrap:wrap;padding:14px 0;}
-  .tile{width:min(40vw,290px);aspect-ratio:1/1;border:none;border-radius:42px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--blanco);position:relative;overflow:hidden;box-shadow:0 12px 0 rgba(0,0,0,.14), var(--sombra);transition:transform .1s, box-shadow .1s;}
+  .menu{flex:1 0 auto;display:flex;gap:18px;align-items:center;justify-content:center;flex-wrap:wrap;padding:14px 0;}
+  .tile{width:min(38vw,250px);aspect-ratio:1/1;border:none;border-radius:38px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--blanco);position:relative;overflow:hidden;box-shadow:0 12px 0 rgba(0,0,0,.14), var(--sombra);transition:transform .1s, box-shadow .1s;}
   .tile:active{transform:translateY(8px);box-shadow:0 4px 0 rgba(0,0,0,.14), var(--sombra-soft);}
   .tile .ico{font-size:clamp(76px,16vw,126px);filter:drop-shadow(0 8px 8px rgba(0,0,0,.2));animation:wobble 4s ease-in-out infinite;}
   .tile .lbl{font-size:clamp(26px,4.4vw,40px);font-weight:800;text-shadow:0 2px 0 rgba(0,0,0,.12);}
   .tile.palabras{background:linear-gradient(150deg,#FF9D6B,#FF5A2E);}
   .tile.numeros{background:linear-gradient(150deg,#4FD79E,#19A86F);}
+  .tile.puzzle{background:linear-gradient(150deg,#8FB8F5,#4A6FE0);}
   .tile::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 32% 16%,rgba(255,255,255,.45),transparent 46%);}
   @keyframes wobble{0%,100%{transform:rotate(-5deg) translateY(0);}50%{transform:rotate(5deg) translateY(-9px);}}
   .mascot-home{font-size:clamp(64px,13vw,104px);animation:float 3.4s ease-in-out infinite;text-align:center;}
@@ -219,6 +220,49 @@
   .crop-cancel{background:#F1E7DC;color:var(--tinta);}
   .crop-ok{background:linear-gradient(150deg,#62B7F2,#2E8FD6);color:#fff;box-shadow:0 5px 0 #1F6FAC;}
   .crop-ok:active{transform:translateY(3px);box-shadow:0 2px 0 #1F6FAC;}
+  /* PUZZLE */
+  .puz-grid{flex:1 0 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;align-content:start;padding:12px 0 20px;}
+  .puz-card{border:none;border-radius:24px;overflow:hidden;cursor:pointer;background:#fff;box-shadow:0 8px 0 rgba(0,0,0,.12),var(--sombra-soft);padding:0;display:flex;flex-direction:column;transition:transform .1s,box-shadow .1s;}
+  .puz-card:active{transform:translateY(6px);box-shadow:0 2px 0 rgba(0,0,0,.12);}
+  .puz-card img{width:100%;aspect-ratio:1/1;object-fit:cover;display:block;}
+  .puz-card .pn{font-weight:800;font-size:17px;padding:10px 8px;text-align:center;color:var(--tinta);}
+  .puz-card .pp{font-family:'Nunito';font-weight:800;font-size:12px;color:var(--tinta-suave);padding-bottom:10px;text-align:center;margin-top:-6px;}
+  .puz-empty{text-align:center;font-family:'Nunito';font-weight:800;color:var(--tinta-suave);font-size:16px;padding:40px 20px;line-height:1.6;}
+  /* juego */
+  .pz-wrap{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;gap:12px;padding:6px 0 16px;}
+  .pz-board{position:relative;width:min(86vw,50vh,500px);aspect-ratio:1/1;border-radius:20px;background:#fff;box-shadow:var(--sombra);overflow:hidden;}
+  .pz-ghost{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.16;filter:saturate(.6);}
+  .pz-cells{position:absolute;inset:0;display:grid;}
+  .pz-cell{border:2px dashed rgba(58,45,40,.16);border-radius:6px;background-repeat:no-repeat;position:relative;}
+  .pz-cell.done{border:none;animation:cellPop .3s ease;}
+  @keyframes cellPop{0%{transform:scale(.7);}60%{transform:scale(1.08);}100%{transform:scale(1);}}
+  .pz-intro{position:absolute;inset:0;z-index:4;background-size:cover;background-position:center;display:flex;align-items:flex-end;justify-content:center;padding:16px;}
+  .pz-intro.brk{animation:shatter .55s ease forwards;}
+  @keyframes shatter{0%{opacity:1;transform:scale(1) rotate(0);}100%{opacity:0;transform:scale(1.25) rotate(4deg);filter:blur(6px);}}
+  .pz-tray{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-content:flex-start;width:min(94vw,560px);min-height:70px;padding:10px;background:rgba(255,255,255,.65);border-radius:20px;box-shadow:var(--sombra-soft);}
+  .pz-piece{border-radius:8px;background-repeat:no-repeat;box-shadow:0 4px 10px rgba(0,0,0,.22);cursor:grab;touch-action:none;animation:pieceIn .4s cubic-bezier(.2,1.3,.4,1) backwards;}
+  @keyframes pieceIn{from{transform:scale(0) rotate(-14deg);opacity:0;}to{transform:scale(1) rotate(0);opacity:1;}}
+  .pz-drag{position:fixed;z-index:75;pointer-events:none;border-radius:8px;background-repeat:no-repeat;box-shadow:0 14px 30px rgba(0,0,0,.35);transform:translate(-50%,-58%) scale(1.05);}
+  .pz-count{font-family:'Nunito';font-weight:900;color:var(--tinta-suave);font-size:15px;}
+  /* victoria */
+  .win-pop{position:fixed;inset:0;z-index:72;display:none;align-items:center;justify-content:center;background:rgba(58,45,40,.5);backdrop-filter:blur(4px);}
+  .win-pop.on{display:flex;animation:fadeIn .3s ease;}
+  .win-card{background:linear-gradient(160deg,#fff,#FFF3E0);border-radius:34px;padding:24px 26px;text-align:center;box-shadow:var(--sombra);animation:starPop .8s cubic-bezier(.2,1.4,.4,1);max-width:88vw;}
+  .win-card img{width:min(56vw,260px);aspect-ratio:1/1;object-fit:cover;border-radius:20px;box-shadow:0 10px 24px rgba(0,0,0,.2);}
+  .win-card h2{font-size:34px;font-weight:800;margin:10px 0 2px;color:var(--coral);}
+  .win-card .wbtns{display:flex;gap:10px;margin-top:16px;}
+  .win-card .wbtns button{flex:1;border:none;border-radius:20px;font-family:'Baloo 2';font-weight:800;font-size:19px;padding:14px;cursor:pointer;}
+  .win-again{background:linear-gradient(150deg,#62B7F2,#2E8FD6);color:#fff;box-shadow:0 6px 0 #1F6FAC;}
+  .win-home{background:#F1E7DC;color:var(--tinta);}
+  .balloon{position:fixed;bottom:-90px;z-index:71;pointer-events:none;font-size:56px;animation:floatUp linear forwards;}
+  @keyframes floatUp{0%{transform:translateY(0) rotate(-6deg);}50%{transform:translateY(-58vh) translateX(24px) rotate(6deg);}100%{transform:translateY(-118vh) translateX(-14px) rotate(-6deg);}}
+  /* cropper cuadrado */
+  .crop-view.square .crop-mask::after{border-radius:14px;}
+  /* form puzzle padre */
+  .pz-prev{width:110px;height:110px;border-radius:16px;object-fit:cover;display:block;margin:8px auto;box-shadow:var(--sombra-soft);background:#FFF3E6;}
+  .pz-btn-row{display:flex;gap:8px;margin-top:10px;}
+  .pz-btn-row button{flex:1;border:none;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:15px;padding:12px 8px;cursor:pointer;box-shadow:var(--sombra-soft);background:#FFF8EE;color:var(--tinta);}
+  .pz-btn-row button.on{background:#FFE2DA;}
   .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--tinta);color:#fff;padding:12px 22px;border-radius:14px;font-weight:700;z-index:90;opacity:0;transition:.3s;font-size:15px;max-width:88vw;text-align:center;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -241,6 +285,7 @@
   <div class="menu">
     <button class="tile palabras" data-go="palabras"><span class="ico">🗣️</span><span class="lbl">Palabras</span></button>
     <button class="tile numeros" data-go="numeros"><span class="ico">🔢</span><span class="lbl">Números</span></button>
+    <button class="tile puzzle" id="goPuzzles"><span class="ico">🧩</span><span class="lbl">Armar</span></button>
   </div>
   <div class="mascot-home">🐻</div>
 </section>
@@ -271,6 +316,47 @@
     </div>
   </div>
 </section>
+
+<!-- PUZZLES LIST -->
+<section id="puzzles" class="screen">
+  <div class="bar">
+    <button class="ghost-btn" id="puzzlesBack">🏠</button>
+    <div class="bar-title">Rompecabezas 🧩</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="puz-grid" id="puzGrid"></div>
+</section>
+
+<!-- PUZZLE PLAY -->
+<section id="puzplay" class="screen">
+  <div class="bar">
+    <button class="ghost-btn" id="puzplayBack">◀</button>
+    <div class="bar-title" id="pzTitle">Puzzle</div>
+    <div class="pz-count" id="pzCount"></div>
+  </div>
+  <div class="pz-wrap">
+    <div class="pz-board" id="pzBoard">
+      <div class="pz-ghost" id="pzGhost"></div>
+      <div class="pz-cells" id="pzCells"></div>
+      <div class="pz-intro" id="pzIntro" style="display:none">
+        <button class="candy gold pulseit" id="pzStart">▶ ¡Comenzar!</button>
+      </div>
+    </div>
+    <div class="pz-tray" id="pzTray"></div>
+  </div>
+</section>
+
+<!-- VICTORIA -->
+<div class="win-pop" id="winPop">
+  <div class="win-card">
+    <img id="winImg" alt="">
+    <h2>¡Lo lograste! 🎉</h2>
+    <div class="wbtns">
+      <button class="win-again" id="winAgain">🔁 Otra vez</button>
+      <button class="win-home" id="winHome">🏠</button>
+    </div>
+  </div>
+</div>
 
 <!-- PRIZES -->
 <section id="prizes" class="screen">
@@ -331,6 +417,7 @@
     <button class="on" data-ptab="fotos">📷 Fotos</button>
     <button data-ptab="voces">🎙️ Voces</button>
     <button data-ptab="nueva">➕ Palabras</button>
+    <button data-ptab="puz">🧩 Puzzle</button>
     <button data-ptab="prog">📊 Avance</button>
     <button data-ptab="ajustes">⚙️ Ajustes</button>
   </div>
@@ -364,6 +451,30 @@
       </div>
       <div id="customList" style="margin-top:16px"></div>
     </div>
+    <div class="ptab" id="ptab-puz">
+      <p class="hint">Crea rompecabezas con fotos de la familia. Graba tu voz celebrando ("¡Bravo mi amor, lo lograste!") y sonará al terminar de armarlo.</p>
+      <div class="add-form">
+        <div class="pick-lbl" style="margin-top:0">1️⃣ Foto del rompecabezas</div>
+        <button class="add-btn" id="pzPickFoto" style="background:linear-gradient(150deg,#62B7F2,#2E8FD6);box-shadow:0 6px 0 #1F6FAC">📷 Elegir foto</button>
+        <img class="pz-prev" id="pzPrev" style="display:none">
+        <div class="pick-lbl">2️⃣ Nombre del rompecabezas</div>
+        <input id="pzName" maxlength="20" placeholder="Ej. La familia">
+        <div class="pick-lbl">3️⃣ ¿En cuántas piezas?</div>
+        <select id="pzPieces" class="wsel">
+          <option value="4">4 piezas (fácil)</option>
+          <option value="9">9 piezas</option>
+          <option value="16">16 piezas</option>
+          <option value="25">25 piezas (difícil)</option>
+        </select>
+        <div class="pick-lbl">4️⃣ Tu voz de celebración (suena al ganar)</div>
+        <div class="pz-btn-row">
+          <button id="pzRec">🎙️ Grabar</button>
+          <button id="pzPlay" disabled style="opacity:.4">▶ Escuchar</button>
+        </div>
+        <button class="add-btn" id="pzCreate" style="margin-top:16px">🧩 Crear rompecabezas</button>
+      </div>
+      <div id="pzAdminList" style="margin-top:16px"></div>
+    </div>
     <div class="ptab" id="ptab-prog">
       <div class="stat-grid">
         <div class="stat"><b id="pStars">0</b><span>estrellas ganadas</span></div>
@@ -384,6 +495,7 @@
 </section>
 
 <input type="file" id="fotoInput" accept="image/*" style="display:none">
+<input type="file" id="pzFotoInput" accept="image/*" style="display:none">
 
 <!-- CROPPER -->
 <div class="overlay" id="cropOverlay">
@@ -444,6 +556,10 @@ function builtinWorld(id){for(var i=0;i<WORLDS.length;i++)if(WORLDS[i].id===id)r
 function itemsForWorld(id){if(id==='mios')return CUSTOM_WORDS.filter(function(w){return (w.world||'mios')==='mios';});
   var bw=builtinWorld(id),extra=CUSTOM_WORDS.filter(function(w){return w.world===id;});return bw?bw.items.concat(extra):extra;}
 function miosCount(){return CUSTOM_WORDS.filter(function(w){return (w.world||'mios')==='mios';}).length;}
+var PUZZLES=load('mv_puzzles',[]);
+var puzzlesTs=load('mv_puzzlesTs',0);
+function savePuzzles(){save('mv_puzzles',PUZZLES);puzzlesTs=Date.now();save('mv_puzzlesTs',puzzlesTs);pushPuzzles();}
+function pushPuzzles(){if(!fbReady)return;try{fbdb.ref('mivoz/puzzles').set({list:PUZZLES,ts:puzzlesTs});}catch(e){}}
 var EMOJIS='😀 😍 🥰 😴 😋 🤗 👶 👧 👦 👩 👨 👵 👴 👪 🐶 🐱 🐭 🐰 🦊 🐻 🐼 🐨 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🐦 🦆 🦉 🐴 🦄 🐝 🐢 🐟 🐬 🦋 🍎 🍌 🍇 🍓 🍉 🍪 🍞 🥛 🍼 🧃 🍕 🍦 🍭 🥕 ⚽ 🏀 🎈 🎁 🧸 🚗 🚌 🚂 ✈️ 🚀 🏠 🛏️ 🌈 ⭐ ❤️ 💧 🛁 🚽 🦷 👕 👟 🧦 🎵 📖'.split(' ');
 var NUM_TXT=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
 var NUMEROS=[]; for(var n=1;n<=10;n++)NUMEROS.push({id:'n'+n,n:n,t:NUM_TXT[n],e:'🍎'});
@@ -519,6 +635,7 @@ function startSync(){updateCloudBadge();
   try{fbdb.ref(PROG_PATH).on('value',function(snap){var v=snap.val();if(v&&(v.stars||0)>(prog.stars||0)){prog.stars=v.stars;prog.prizesShown=v.prizesShown||prog.prizesShown;save('mv_prog',prog);updateStars();}});}catch(e){}
   try{fbdb.ref('mivoz/custom').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>customTs){CUSTOM_WORDS=v.list||[];customTs=v.ts;save('mv_custom',CUSTOM_WORDS);save('mv_customTs',customTs);renderWorlds();if(parentOpen){buildCustomList();buildFotoList();buildRecList();buildWorldSelect();}}});}catch(e){}
   try{fbdb.ref('mivoz/worlds').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>worldsTs){CUSTOM_WORLDS=v.list||[];worldsTs=v.ts;save('mv_worlds',CUSTOM_WORLDS);save('mv_worldsTs',worldsTs);renderWorlds();if(parentOpen){buildWorldSelect();buildWorldsList();buildCustomList();}}});}catch(e){}
+  try{fbdb.ref('mivoz/puzzles').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>puzzlesTs){PUZZLES=v.list||[];puzzlesTs=v.ts;save('mv_puzzles',PUZZLES);save('mv_puzzlesTs',puzzlesTs);if(parentOpen)buildPzAdmin();if(document.getElementById('puzzles').classList.contains('active'))renderPuzList();}});}catch(e){}
 }
 function pushProg(){if(!fbReady)return;try{fbdb.ref(PROG_PATH).set({stars:prog.stars||0,prizesShown:prog.prizesShown||0,ts:Date.now()});}catch(e){}}
 function updateCloudBadge(){var el=document.getElementById('cloudBadge');if(!el)return;
@@ -694,7 +811,7 @@ document.getElementById('pinKeys').addEventListener('click',function(e){var b=e.
   if(pinBuf.length<4){pinBuf+=b.textContent;renderPin();}
   if(pinBuf.length===4){if(pinBuf===cfg.pin){document.getElementById('pinOverlay').classList.remove('on');openParent();}
     else{document.getElementById('pinErr').textContent='PIN incorrecto';pinBuf='';setTimeout(renderPin,400);}}});
-function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();buildCustomList();buildWorldsList();buildWorldSelect();renderEmojiPick();renderWorldEmojiPick();updateProgUI();updateCloudBadge();}
+function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();buildCustomList();buildWorldsList();buildWorldSelect();buildPzAdmin();renderEmojiPick();renderWorldEmojiPick();updateProgUI();updateCloudBadge();}
 document.getElementById('parentExit').addEventListener('click',function(){parentOpen=false;show('home');refreshHome();});
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on');});
@@ -732,10 +849,12 @@ document.getElementById('fotoInput').addEventListener('change',function(e){var f
 
 /* ============ RECORTE DE FOTO ============ */
 var cropCb=null,cImg=null,cScale=1,cBaseW=0,cBaseH=0,cDx=0,cDy=0,cV=0,cDrag=false,cSX=0,cSY=0,cSDx=0,cSDy=0;
-function openCropper(file,cb){cropCb=cb;var url=URL.createObjectURL(file),im=document.getElementById('cropImg');
+function openCropper(file,cb,shape){cropCb=cb;var url=URL.createObjectURL(file),im=document.getElementById('cropImg');
   var pre=new Image();pre.onload=function(){cImg=pre;
     document.getElementById('cropOverlay').classList.add('on');
-    var view=document.getElementById('cropView');cV=view.clientWidth||view.offsetWidth||280;
+    var view=document.getElementById('cropView');
+    if(shape==='square')view.classList.add('square');else view.classList.remove('square');
+    cV=view.clientWidth||view.offsetWidth||280;
     var cover=cV/Math.min(pre.width,pre.height);cBaseW=pre.width*cover;cBaseH=pre.height*cover;cScale=1;
     document.getElementById('cropZoom').value=1;cDx=(cV-cBaseW)/2;cDy=(cV-cBaseH)/2;im.src=url;applyCrop();};
   pre.onerror=function(){URL.revokeObjectURL(url);if(cb)cb(null);};pre.src=url;}
@@ -812,6 +931,183 @@ function saveCustom(){save('mv_custom',CUSTOM_WORDS);customTs=Date.now();save('m
 function saveWorlds(){save('mv_worlds',CUSTOM_WORLDS);worldsTs=Date.now();save('mv_worldsTs',worldsTs);pushWorlds();}
 function pushCustom(){if(!fbReady)return;try{fbdb.ref('mivoz/custom').set({list:CUSTOM_WORDS,ts:customTs});}catch(e){}}
 function pushWorlds(){if(!fbReady)return;try{fbdb.ref('mivoz/worlds').set({list:CUSTOM_WORLDS,ts:worldsTs});}catch(e){}}
+
+/* ============ PUZZLE: NAVEGACIÓN ============ */
+document.getElementById('goPuzzles').addEventListener('click',function(){renderPuzList();show('puzzles');});
+document.getElementById('puzzlesBack').addEventListener('click',function(){show('home');refreshHome();});
+document.getElementById('puzplayBack').addEventListener('click',function(){stopWinFx();show('puzzles');renderPuzList();});
+function renderPuzList(){var g=document.getElementById('puzGrid');
+  if(!PUZZLES.length){g.innerHTML='<div class="puz-empty">Aún no hay rompecabezas.<br>Papá o mamá pueden crearlos en 🔒 → 🧩 Puzzle</div>';return;}
+  g.innerHTML=PUZZLES.map(function(p){return '<button class="puz-card" data-id="'+p.id+'"><img id="pth_'+p.id+'"><span class="pn">'+p.name+'</span><span class="pp">'+p.n+' piezas</span></button>';}).join('');
+  PUZZLES.forEach(function(p){getBlob('puzfoto_'+p.id).then(function(b){var im=document.getElementById('pth_'+p.id);if(im&&b)im.src=URL.createObjectURL(b);});});}
+document.getElementById('puzGrid').addEventListener('click',function(e){var c=e.target.closest('.puz-card');if(!c)return;
+  var id=c.getAttribute('data-id'),p=null;PUZZLES.forEach(function(x){if(x.id===id)p=x;});if(p)startPuzzle(p);});
+
+/* ============ PUZZLE: CREACIÓN (MODO PAPÁ) ============ */
+var pzDraft={foto:null,audio:null},pzPrevURL=null;
+document.getElementById('pzPickFoto').addEventListener('click',function(){document.getElementById('pzFotoInput').value='';document.getElementById('pzFotoInput').click();});
+document.getElementById('pzFotoInput').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
+  openCropper(f,function(blob){if(!blob)return;pzDraft.foto=blob;
+    if(pzPrevURL){try{URL.revokeObjectURL(pzPrevURL);}catch(e2){}}
+    pzPrevURL=URL.createObjectURL(blob);var pv=document.getElementById('pzPrev');pv.src=pzPrevURL;pv.style.display='block';
+    toast('Foto lista ✓');},'square');});
+var pzMediaRec=null,pzChunks=[];
+document.getElementById('pzRec').addEventListener('click',function(){var btn=this;
+  if(pzMediaRec&&pzMediaRec.state==='recording'){try{pzMediaRec.stop();}catch(e){}btn.classList.remove('on');btn.textContent='🎙️ Grabar';return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Micrófono no disponible aquí.');return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    try{pzMediaRec=new MediaRecorder(stream);}catch(e){toast('Tu navegador no soporta grabar.');stream.getTracks().forEach(function(t){t.stop();});return;}
+    pzChunks=[];btn.classList.add('on');btn.textContent='⏹️ Parar';
+    pzMediaRec.ondataavailable=function(ev){if(ev.data.size>0)pzChunks.push(ev.data);};
+    pzMediaRec.onstop=function(){pzDraft.audio=new Blob(pzChunks,{type:pzChunks[0]?pzChunks[0].type:'audio/webm'});
+      stream.getTracks().forEach(function(t){t.stop();});
+      var pb=document.getElementById('pzPlay');pb.disabled=false;pb.style.opacity='1';toast('¡Voz de celebración lista! ✓');};
+    pzMediaRec.start();toast('Grabando… di algo lindo y toca Parar');
+  }).catch(function(){toast('Permiso de micrófono denegado');});});
+document.getElementById('pzPlay').addEventListener('click',function(){if(pzDraft.audio){try{playURL(URL.createObjectURL(pzDraft.audio));}catch(e){}}});
+document.getElementById('pzCreate').addEventListener('click',function(){
+  var nm=(document.getElementById('pzName').value||'').trim();
+  if(!pzDraft.foto){toast('Primero elige la foto 📷');return;}
+  if(!nm){toast('Escribe el nombre del rompecabezas');return;}
+  var n=parseInt(document.getElementById('pzPieces').value,10)||4;
+  var id='p_'+Date.now();
+  var foto=pzDraft.foto,audio=pzDraft.audio;
+  saveMedia('puzfoto_'+id,foto).then(function(){
+    if(audio)return saveMedia('puzvoz_'+id,audio);
+  }).then(function(){
+    PUZZLES.push({id:id,name:nm,n:n});savePuzzles();buildPzAdmin();
+    pzDraft={foto:null,audio:null};document.getElementById('pzName').value='';
+    document.getElementById('pzPrev').style.display='none';
+    var pb=document.getElementById('pzPlay');pb.disabled=true;pb.style.opacity='.4';
+    toast('¡Rompecabezas "'+nm+'" creado! 🧩');
+  });});
+function buildPzAdmin(){var el=document.getElementById('pzAdminList');if(!el)return;
+  if(!PUZZLES.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="pick-lbl">Tus rompecabezas:</div>'+PUZZLES.map(function(p){
+    return '<div class="rec-item" data-id="'+p.id+'"><img class="thumb" id="pzt_'+p.id+'"><div class="nm">'+p.name+'<small>'+p.n+' piezas</small></div><button class="mini del" data-a="delp">🗑️</button></div>';}).join('');
+  PUZZLES.forEach(function(p){getBlob('puzfoto_'+p.id).then(function(b){var im=document.getElementById('pzt_'+p.id);if(im&&b)im.src=URL.createObjectURL(b);});});}
+document.getElementById('pzAdminList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.getAttribute('data-a')!=='delp')return;
+  var id=b.closest('.rec-item').getAttribute('data-id');
+  PUZZLES=PUZZLES.filter(function(p){return p.id!==id;});savePuzzles();
+  delMedia('puzfoto_'+id);delMedia('puzvoz_'+id);buildPzAdmin();toast('Rompecabezas borrado');});
+
+/* ============ PUZZLE: JUEGO ============ */
+var pz={p:null,N:2,url:null,voz:null,placed:0,total:0,dragEl:null,dragIdx:-1,cell:0,rect:null};
+function startPuzzle(p){
+  pz.p=p;pz.N=Math.round(Math.sqrt(p.n))||2;pz.placed=0;pz.total=p.n;
+  if(pz.url){try{URL.revokeObjectURL(pz.url);}catch(e){}}pz.url=null;pz.voz=null;
+  getBlob('puzfoto_'+p.id).then(function(b){
+    if(!b){toast('Este rompecabezas aún no descarga su foto. Intenta de nuevo en un momento.');return;}
+    pz.url=URL.createObjectURL(b);
+    getBlob('puzvoz_'+p.id).then(function(vb){if(vb){try{pz.voz=URL.createObjectURL(vb);}catch(e){}}
+      document.getElementById('pzTitle').textContent=p.name;
+      document.getElementById('pzCount').textContent='';
+      var intro=document.getElementById('pzIntro');
+      intro.style.display='flex';intro.classList.remove('brk');intro.style.backgroundImage='url('+pz.url+')';
+      document.getElementById('pzGhost').style.backgroundImage='url('+pz.url+')';
+      document.getElementById('pzCells').innerHTML='';
+      document.getElementById('pzTray').innerHTML='';
+      show('puzplay');warmAudio();
+    });});}
+document.getElementById('pzStart').addEventListener('click',function(e){e.stopPropagation();
+  var intro=document.getElementById('pzIntro');intro.classList.add('brk');
+  setTimeout(function(){intro.style.display='none';buildBoard();},520);});
+function buildBoard(){
+  var N=pz.N,board=document.getElementById('pzBoard'),cells=document.getElementById('pzCells'),tray=document.getElementById('pzTray');
+  pz.rect=board.getBoundingClientRect();pz.cell=pz.rect.width/N;
+  cells.style.gridTemplateColumns='repeat('+N+',1fr)';cells.style.gridTemplateRows='repeat('+N+',1fr)';
+  var h='';for(var i=0;i<N*N;i++)h+='<div class="pz-cell" data-i="'+i+'"></div>';
+  cells.innerHTML=h;
+  var order=[];for(var j=0;j<N*N;j++)order.push(j);
+  for(var k=order.length-1;k>0;k--){var r=Math.floor(Math.random()*(k+1)),t=order[k];order[k]=order[r];order[r]=t;}
+  var tp=N<=2?92:(N===3?76:(N===4?60:48));
+  tray.innerHTML=order.map(function(idx,pos){
+    return '<div class="pz-piece" data-i="'+idx+'" style="width:'+tp+'px;height:'+tp+'px;'+bgFor(idx,tp)+';animation-delay:'+(pos*0.05)+'s"></div>';}).join('');
+  updatePzCount();
+}
+function bgFor(idx,size){var N=pz.N,row=Math.floor(idx/N),col=idx%N;
+  var px=N>1?(col/(N-1)*100):0,py=N>1?(row/(N-1)*100):0;
+  return 'background-image:url('+pz.url+');background-size:'+(N*100)+'% '+(N*100)+'%;background-position:'+px+'% '+py+'%';}
+function updatePzCount(){document.getElementById('pzCount').textContent=pz.placed+' / '+pz.total;}
+/* drag & drop táctil */
+(function(){var tray=document.getElementById('pzTray');
+  function pStart(e){var t=e.target.closest('.pz-piece');if(!t)return;
+    var x=e.touches?e.touches[0].clientX:e.clientX,y=e.touches?e.touches[0].clientY:e.clientY;
+    pz.dragIdx=+t.getAttribute('data-i');pz.rect=document.getElementById('pzBoard').getBoundingClientRect();pz.cell=pz.rect.width/pz.N;
+    var g=document.createElement('div');g.className='pz-drag';g.style.width=pz.cell+'px';g.style.height=pz.cell+'px';
+    g.style.cssText+=';'+bgFor(pz.dragIdx,pz.cell);g.style.left=x+'px';g.style.top=y+'px';
+    document.body.appendChild(g);pz.dragEl=g;t.style.opacity='.25';pz.srcEl=t;
+    if(e.cancelable)e.preventDefault();}
+  function pMove(e){if(!pz.dragEl)return;var x=e.touches?e.touches[0].clientX:e.clientX,y=e.touches?e.touches[0].clientY:e.clientY;
+    pz.dragEl.style.left=x+'px';pz.dragEl.style.top=y+'px';if(e.cancelable)e.preventDefault();}
+  function pEnd(e){if(!pz.dragEl)return;
+    var x,y;
+    if(e.changedTouches&&e.changedTouches.length){x=e.changedTouches[0].clientX;y=e.changedTouches[0].clientY;}
+    else{x=e.clientX;y=e.clientY;}
+    var N=pz.N,r=pz.rect,ok=false;
+    if(x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom){
+      var col=Math.min(N-1,Math.max(0,Math.floor((x-r.left)/pz.cell)));
+      var row=Math.min(N-1,Math.max(0,Math.floor((y-r.top)/pz.cell)));
+      var idx=row*N+col;
+      var tRow=Math.floor(pz.dragIdx/N),tCol=pz.dragIdx%N;
+      var cx=r.left+(tCol+0.5)*pz.cell,cy=r.top+(tRow+0.5)*pz.cell;
+      var dist=Math.sqrt((x-cx)*(x-cx)+(y-cy)*(y-cy));
+      if(idx===pz.dragIdx||dist<pz.cell*0.8)ok=true;
+    }
+    if(ok)placePiece(pz.dragIdx);
+    else if(pz.srcEl)pz.srcEl.style.opacity='1';
+    try{document.body.removeChild(pz.dragEl);}catch(e2){}
+    pz.dragEl=null;pz.srcEl=null;pz.dragIdx=-1;}
+  tray.addEventListener('touchstart',pStart,{passive:false});
+  tray.addEventListener('mousedown',pStart);
+  window.addEventListener('touchmove',pMove,{passive:false});
+  window.addEventListener('mousemove',pMove);
+  window.addEventListener('touchend',pEnd);
+  window.addEventListener('mouseup',pEnd);
+})();
+function placePiece(idx){
+  var cell=document.querySelector('.pz-cell[data-i="'+idx+'"]');
+  if(!cell||cell.classList.contains('done'))return;
+  cell.classList.add('done');cell.style.cssText+=';'+bgFor(idx,pz.cell);
+  if(pz.srcEl&&pz.srcEl.parentNode)pz.srcEl.parentNode.removeChild(pz.srcEl);
+  popSound();sparkle(cell);
+  pz.placed++;updatePzCount();
+  if(pz.placed>=pz.total)setTimeout(puzzleWin,450);
+}
+function popSound(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
+  var o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.setValueAtTime(420,actx.currentTime);
+  o.frequency.exponentialRampToValueAtTime(880,actx.currentTime+0.12);
+  o.connect(g);g.connect(actx.destination);g.gain.setValueAtTime(0.22,actx.currentTime);
+  g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+0.18);o.start();o.stop(actx.currentTime+0.2);}catch(e){}}
+/* victoria */
+var winConfT=null,winBalT=null;
+function puzzleWin(){
+  prog.stars=(prog.stars||0)+2;save('mv_prog',prog);pushProg();updateStars();
+  document.getElementById('winImg').src=pz.url||'';
+  document.getElementById('winPop').classList.add('on');
+  if(pz.voz)playURL(pz.voz);else speakText('¡Muy bien! ¡Lo lograste!');
+  successSound();startWinFx();
+}
+function startWinFx(){stopWinFx();
+  winConfT=setInterval(function(){var c=document.getElementById('confetti');c.classList.add('on');
+    for(var i=0;i<8;i++){var d=document.createElement('div');d.className='conf';d.style.left=Math.random()*100+'vw';
+      d.style.background=BUBBLE_COLS[Math.floor(Math.random()*BUBBLE_COLS.length)];
+      d.style.animationDuration=(1.6+Math.random()*1.4)+'s';d.style.borderRadius=(Math.random()>0.5?'50%':'3px');
+      c.appendChild(d);(function(n){setTimeout(function(){if(n.parentNode)n.parentNode.removeChild(n);},3200);})(d);}
+  },380);
+  var balls=['🎈','🎈','🎈','🎂','⭐','🎉'];
+  winBalT=setInterval(function(){var b=document.createElement('div');b.className='balloon';
+    b.textContent=balls[Math.floor(Math.random()*balls.length)];
+    b.style.left=(5+Math.random()*88)+'vw';b.style.fontSize=(44+Math.random()*34)+'px';
+    b.style.animationDuration=(3.2+Math.random()*2.4)+'s';
+    document.body.appendChild(b);(function(n){setTimeout(function(){if(n.parentNode)n.parentNode.removeChild(n);},6000);})(b);
+  },520);}
+function stopWinFx(){if(winConfT){clearInterval(winConfT);winConfT=null;}
+  if(winBalT){clearInterval(winBalT);winBalT=null;}
+  var c=document.getElementById('confetti');c.classList.remove('on');c.innerHTML='';
+  document.querySelectorAll('.balloon').forEach(function(b){if(b.parentNode)b.parentNode.removeChild(b);});}
+document.getElementById('winAgain').addEventListener('click',function(){stopWinFx();document.getElementById('winPop').classList.remove('on');if(pz.p)startPuzzle(pz.p);});
+document.getElementById('winHome').addEventListener('click',function(){stopWinFx();document.getElementById('winPop').classList.remove('on');show('puzzles');renderPuzList();});
 
 /* ============ GRABACIÓN ============ */
 function buildRecList(){listKeys().then(function(keys){var html='';
