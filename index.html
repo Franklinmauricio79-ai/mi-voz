@@ -643,10 +643,16 @@ function updateCloudBadge(){var el=document.getElementById('cloudBadge');if(!el)
   el.textContent=m[cloudState]||'';el.className='cloud-badge '+cloudState;}
 
 /* ============ DESBLOQUEO AUDIO ============ */
-var actx=null,warmed=false;
+var actx=null,warmed=false,winAudio=null;
+var SILENT_WAV='data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
 function warmAudio(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();}catch(e){}
   if(warmed)return;warmed=true;
-  try{if(window.speechSynthesis){speechSynthesis.resume();var u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}}catch(e){}}
+  try{if(window.speechSynthesis){speechSynthesis.resume();var u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}}catch(e){}
+  /* desbloquear un reproductor reutilizable para audios fuera del toque (victoria del puzzle) */
+  try{winAudio=new Audio();winAudio.setAttribute('playsinline','');winAudio.muted=true;winAudio.src=SILENT_WAV;
+    var p=winAudio.play();if(p&&p.catch)p.catch(function(){});
+    setTimeout(function(){try{winAudio.pause();winAudio.muted=false;}catch(e2){}},80);
+  }catch(e){}}
 document.addEventListener('touchstart',warmAudio,{passive:true});
 document.addEventListener('click',warmAudio);
 
@@ -1010,6 +1016,11 @@ function startPuzzle(p){
       show('puzplay');warmAudio();
     });});}
 document.getElementById('pzStart').addEventListener('click',function(e){e.stopPropagation();
+  warmAudio();
+  /* precargar la voz de victoria dentro de este toque para que iOS la permita luego */
+  if(pz.voz&&winAudio){try{winAudio.muted=true;winAudio.src=pz.voz;var pp=winAudio.play();
+    if(pp&&pp.then)pp.then(function(){try{winAudio.pause();winAudio.currentTime=0;winAudio.muted=false;}catch(e2){}}).catch(function(){try{winAudio.muted=false;}catch(e3){}});
+  }catch(e4){}}
   var intro=document.getElementById('pzIntro');intro.classList.add('brk');
   setTimeout(function(){intro.style.display='none';buildBoard();},520);});
 function buildBoard(){
@@ -1072,7 +1083,15 @@ function placePiece(idx){
   if(pz.srcEl&&pz.srcEl.parentNode)pz.srcEl.parentNode.removeChild(pz.srcEl);
   popSound();sparkle(cell);
   pz.placed++;updatePzCount();
-  if(pz.placed>=pz.total)setTimeout(puzzleWin,450);
+  if(pz.placed>=pz.total){playWinVoice();setTimeout(puzzleWin,450);}
+}
+function playWinVoice(){
+  if(pz.voz){
+    if(winAudio){try{winAudio.muted=false;winAudio.src=pz.voz;var p=winAudio.play();
+      if(p&&p.catch)p.catch(function(){playURL(pz.voz);});return;}catch(e){}}
+    playURL(pz.voz);return;
+  }
+  speakText('¡Muy bien! ¡Lo lograste!');
 }
 function popSound(){try{actx=actx||new (window.AudioContext||window.webkitAudioContext)();if(actx.state==='suspended')actx.resume();
   var o=actx.createOscillator(),g=actx.createGain();o.type='sine';o.frequency.setValueAtTime(420,actx.currentTime);
@@ -1085,7 +1104,6 @@ function puzzleWin(){
   prog.stars=(prog.stars||0)+2;save('mv_prog',prog);pushProg();updateStars();
   document.getElementById('winImg').src=pz.url||'';
   document.getElementById('winPop').classList.add('on');
-  if(pz.voz)playURL(pz.voz);else speakText('¡Muy bien! ¡Lo lograste!');
   successSound();startWinFx();
 }
 function startWinFx(){stopWinFx();
