@@ -162,8 +162,8 @@
   .pin-err{color:#E0533B;font-family:'Nunito';font-weight:800;min-height:20px;font-size:14px;}
   #parent{background:#FFF8EE;z-index:2;}
   #parent .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:30px;}
-  .tabs{display:flex;gap:6px;background:#fff;padding:6px;border-radius:18px;box-shadow:var(--sombra-soft);margin:14px 0;}
-  .tabs button{flex:1;border:none;background:transparent;padding:11px 4px;border-radius:13px;font-family:'Baloo 2';font-weight:600;font-size:13px;cursor:pointer;color:var(--tinta-suave);white-space:nowrap;}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;background:#fff;padding:6px;border-radius:18px;box-shadow:var(--sombra-soft);margin:14px 0;}
+  .tabs button{flex:1 1 30%;border:none;background:transparent;padding:11px 4px;border-radius:13px;font-family:'Baloo 2';font-weight:600;font-size:13px;cursor:pointer;color:var(--tinta-suave);white-space:nowrap;}
   .tabs button.on{background:var(--coral);color:#fff;font-weight:800;}
   .ptab{display:none;}.ptab.on{display:block;}
   .cloud-badge{margin:12px 0 0;padding:10px 14px;border-radius:14px;font-family:'Nunito';font-weight:800;font-size:13px;text-align:center;}
@@ -263,6 +263,24 @@
   .pz-btn-row{display:flex;gap:8px;margin-top:10px;}
   .pz-btn-row button{flex:1;border:none;border-radius:14px;font-family:'Baloo 2';font-weight:700;font-size:15px;padding:12px 8px;cursor:pointer;box-shadow:var(--sombra-soft);background:#FFF8EE;color:var(--tinta);}
   .pz-btn-row button.on{background:#FFE2DA;}
+  /* COLOREAR */
+  .tile.pintar{background:linear-gradient(150deg,#F79ACB,#D6479B);}
+  .cp-wrap{flex:1 0 auto;display:flex;flex-direction:column;align-items:center;gap:10px;padding:4px 0 14px;}
+  .cp-box{position:relative;background:#fff;border-radius:18px;box-shadow:var(--sombra);overflow:hidden;touch-action:none;max-width:94vw;}
+  .cp-box canvas{display:block;}
+  #cpLines{position:absolute;top:0;left:0;pointer-events:none;}
+  .cp-tools{display:flex;gap:8px;align-items:center;background:rgba(255,255,255,.8);padding:8px 12px;border-radius:18px;box-shadow:var(--sombra-soft);flex-wrap:wrap;justify-content:center;}
+  .cp-tool{border:none;width:52px;height:52px;border-radius:14px;font-size:26px;cursor:pointer;background:#FFF8EE;box-shadow:0 4px 0 rgba(0,0,0,.10);transition:transform .08s;}
+  .cp-tool:active{transform:translateY(3px);box-shadow:0 1px 0 rgba(0,0,0,.10);}
+  .cp-tool.on{background:#FFE2B8;outline:3px solid var(--sol);}
+  .cp-size{border:none;background:#FFF8EE;border-radius:12px;cursor:pointer;width:42px;height:52px;color:var(--tinta);box-shadow:0 4px 0 rgba(0,0,0,.08);}
+  .cp-size:nth-of-type(1){font-size:12px;}.cp-size:nth-of-type(2){font-size:20px;}.cp-size:nth-of-type(3){font-size:30px;}
+  .cp-size.on{background:#FFE2B8;outline:3px solid var(--sol);}
+  .cp-sep{width:2px;height:36px;background:var(--linea);border-radius:2px;}
+  .cp-palette{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;max-width:94vw;padding:6px 8px 2px;}
+  .pencil{width:38px;height:72px;border:none;cursor:pointer;border-radius:7px 7px 10px 10px;clip-path:polygon(50% 0,100% 20%,100% 100%,0 100%,0 20%);box-shadow:0 4px 8px rgba(0,0,0,.18);transition:transform .12s;position:relative;}
+  .pencil.on{transform:translateY(-12px) scale(1.08);}
+  .cp-hint{font-family:'Nunito';font-weight:900;color:var(--tinta-suave);font-size:13px;}
   .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(40px);background:var(--tinta);color:#fff;padding:12px 22px;border-radius:14px;font-weight:700;z-index:90;opacity:0;transition:.3s;font-size:15px;max-width:88vw;text-align:center;}
   .toast.on{opacity:1;transform:translateX(-50%) translateY(0);}
 </style>
@@ -286,6 +304,7 @@
     <button class="tile palabras" data-go="palabras"><span class="ico">🗣️</span><span class="lbl">Palabras</span></button>
     <button class="tile numeros" data-go="numeros"><span class="ico">🔢</span><span class="lbl">Números</span></button>
     <button class="tile puzzle" id="goPuzzles"><span class="ico">🧩</span><span class="lbl">Armar</span></button>
+    <button class="tile pintar" id="goColoring"><span class="ico">🎨</span><span class="lbl">Pintar</span></button>
   </div>
   <div class="mascot-home">🐻</div>
 </section>
@@ -358,6 +377,44 @@
   </div>
 </div>
 
+<!-- COLORING LIST -->
+<section id="coloring" class="screen">
+  <div class="bar">
+    <button class="ghost-btn" id="coloringBack">🏠</button>
+    <div class="bar-title">A pintar 🎨</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="puz-grid" id="colGrid"></div>
+</section>
+
+<!-- COLOR PLAY -->
+<section id="colorplay" class="screen">
+  <div class="bar">
+    <button class="ghost-btn" id="colplayBack">◀</button>
+    <div class="bar-title" id="colTitle">Pintar</div>
+    <div style="width:60px"></div>
+  </div>
+  <div class="cp-wrap">
+    <div class="cp-box" id="cpBox">
+      <canvas id="cpPaint"></canvas>
+      <canvas id="cpLines"></canvas>
+    </div>
+    <div class="cp-tools">
+      <button class="cp-tool on" id="tFill" title="Balde">🪣</button>
+      <button class="cp-tool" id="tBrush" title="Crayón">🖍️</button>
+      <button class="cp-tool" id="tEraser" title="Borrador">🧽</button>
+      <span class="cp-sep"></span>
+      <button class="cp-size" data-s="10">●</button>
+      <button class="cp-size on" data-s="22">●</button>
+      <button class="cp-size" data-s="38">●</button>
+      <span class="cp-sep"></span>
+      <button class="cp-tool" id="tUndo" title="Deshacer">↩️</button>
+      <button class="cp-tool" id="tClear" title="Empezar de nuevo">🔄</button>
+    </div>
+    <div class="cp-palette" id="cpPalette"></div>
+  </div>
+</section>
+
 <!-- PRIZES -->
 <section id="prizes" class="screen">
   <div class="bar">
@@ -414,42 +471,45 @@
   </div>
   <div class="cloud-badge conectando" id="cloudBadge">☁️ Conectando…</div>
   <div class="tabs">
-    <button class="on" data-ptab="fotos">📷 Fotos</button>
-    <button data-ptab="voces">🎙️ Voces</button>
+    <button class="on" data-ptab="media">🖼️ Fotos y voces</button>
     <button data-ptab="nueva">➕ Palabras</button>
+    <button data-ptab="mundos">🌍 Mundos</button>
     <button data-ptab="puz">🧩 Puzzle</button>
+    <button data-ptab="color">🎨 Pintar</button>
     <button data-ptab="prog">📊 Avance</button>
     <button data-ptab="ajustes">⚙️ Ajustes</button>
   </div>
   <div class="scroll">
-    <div class="ptab on" id="ptab-fotos">
-      <p class="hint">Sube una foto real para cada palabra: tu cara para "papá", la de mamá, el perro de la casa… Reconocer a su gente y sus cosas le ayuda muchísimo. (Se guardan solo en este dispositivo.)</p>
-      <div id="fotoList" style="margin-top:12px"></div>
-    </div>
-    <div class="ptab" id="ptab-voces">
-      <p class="hint">Graba tu voz (o la de mamá/hermanos) para cada palabra. La app la usará en vez de la voz automática. Necesita micrófono y conexión segura (HTTPS).</p>
-      <div id="recList" style="margin-top:12px"></div>
+    <div class="ptab on" id="ptab-media">
+      <p class="hint">Cada palabra puede tener su <b>foto real</b> y <b>tu voz</b>. 📷 pone o cambia la foto (con recorte) · 🎙️ graba la voz · ▶ la escucha · 🗑️ borra la foto y la voz de esa palabra. Los números solo llevan voz.</p>
+      <div id="mediaList" style="margin-top:12px"></div>
+      <div id="fotoList" style="display:none"></div>
+      <div id="recList" style="display:none"></div>
     </div>
     <div class="ptab" id="ptab-nueva">
-      <p class="hint">Crea tus palabras y elige a qué mundo van. También puedes crear mundos nuevos (ej. "Casa" para las partes de la casa).</p>
+      <p class="hint">Crea tus palabras. Es <b>obligatorio elegir el mundo</b> al que va cada una. Después ponles foto y voz en 🖼️.</p>
       <div class="add-form">
         <div class="pick-lbl" style="margin-top:0">✏️ Nueva palabra</div>
         <input id="newWordText" maxlength="18" placeholder="Escribe la palabra (ej. sofá)">
         <div class="pick-lbl">Dibujo:</div>
         <div class="emoji-pick" id="emojiPick"></div>
-        <div class="pick-lbl">¿A qué mundo va?</div>
+        <div class="pick-lbl">¿A qué mundo va? <span style="color:#E0533B">*</span></div>
         <select id="wordWorld" class="wsel"></select>
         <button class="add-btn" id="addWordBtn">➕ Agregar palabra</button>
       </div>
-      <div class="add-form" style="margin-top:14px">
-        <div class="pick-lbl" style="margin-top:0">🌍 Crear un mundo nuevo</div>
+      <div id="customList" style="margin-top:16px"></div>
+    </div>
+    <div class="ptab" id="ptab-mundos">
+      <p class="hint">Crea mundos nuevos (ej. "Casa"), edítalos con ✏️ o elimínalos con 🗑️. Al eliminar un mundo tuyo, también se borran las palabras que creaste dentro de él. Los mundos originales de la app no se pueden borrar.</p>
+      <div class="add-form">
+        <div class="pick-lbl" style="margin-top:0" id="worldFormTitle">🌍 Crear un mundo nuevo</div>
         <input id="newWorldName" maxlength="16" placeholder="Nombre del mundo (ej. Casa)">
         <div class="pick-lbl">Dibujo del mundo:</div>
         <div class="emoji-pick" id="emojiPickWorld"></div>
         <button class="add-btn" id="addWorldBtn" style="background:linear-gradient(150deg,#B988EC,#8A4FD6);box-shadow:0 6px 0 #6C39AE">🌍 Crear mundo</button>
+        <button class="add-btn" id="cancelWorldBtn" style="display:none;background:#F1E7DC;color:var(--tinta);box-shadow:0 6px 0 #D8C7B2;margin-top:8px">✕ Cancelar edición</button>
         <div id="worldsList" style="margin-top:12px"></div>
       </div>
-      <div id="customList" style="margin-top:16px"></div>
     </div>
     <div class="ptab" id="ptab-puz">
       <p class="hint">Crea rompecabezas con fotos de la familia. Graba tu voz celebrando ("¡Bravo mi amor, lo lograste!") y sonará al terminar de armarlo.</p>
@@ -474,6 +534,23 @@
         <button class="add-btn" id="pzCreate" style="margin-top:16px">🧩 Crear rompecabezas</button>
       </div>
       <div id="pzAdminList" style="margin-top:16px"></div>
+    </div>
+    <div class="ptab" id="ptab-color">
+      <p class="hint">Sube cualquier foto o dibujo y la app lo <b>convierte en una lámina para colorear</b> (solo las líneas). Graba tu voz de ánimo: sonará cada 30 segundos mientras pinta.</p>
+      <div class="add-form">
+        <div class="pick-lbl" style="margin-top:0">1️⃣ Imagen</div>
+        <button class="add-btn" id="colPickFoto" style="background:linear-gradient(150deg,#62B7F2,#2E8FD6);box-shadow:0 6px 0 #1F6FAC">📷 Elegir imagen</button>
+        <img class="pz-prev" id="colPrev" style="display:none;background:#fff">
+        <div class="pick-lbl">2️⃣ Nombre de la lámina</div>
+        <input id="colName" maxlength="20" placeholder="Ej. Nuestro perro">
+        <div class="pick-lbl">3️⃣ Tu voz de ánimo (suena cada 30 seg)</div>
+        <div class="pz-btn-row">
+          <button id="colRec">🎙️ Grabar</button>
+          <button id="colPlay" disabled style="opacity:.4">▶ Escuchar</button>
+        </div>
+        <button class="add-btn" id="colCreate" style="margin-top:16px;background:linear-gradient(150deg,#F79ACB,#D6479B);box-shadow:0 6px 0 #A82F75">🎨 Crear lámina</button>
+      </div>
+      <div id="colAdminList" style="margin-top:16px"></div>
     </div>
     <div class="ptab" id="ptab-prog">
       <div class="stat-grid">
@@ -560,6 +637,10 @@ var PUZZLES=load('mv_puzzles',[]);
 var puzzlesTs=load('mv_puzzlesTs',0);
 function savePuzzles(){save('mv_puzzles',PUZZLES);puzzlesTs=Date.now();save('mv_puzzlesTs',puzzlesTs);pushPuzzles();}
 function pushPuzzles(){if(!fbReady)return;try{fbdb.ref('mivoz/puzzles').set({list:PUZZLES,ts:puzzlesTs});}catch(e){}}
+var COLS=load('mv_cols',[]);
+var colsTs=load('mv_colsTs',0);
+function saveCols(){save('mv_cols',COLS);colsTs=Date.now();save('mv_colsTs',colsTs);pushCols();}
+function pushCols(){if(!fbReady)return;try{fbdb.ref('mivoz/cols').set({list:COLS,ts:colsTs});}catch(e){}}
 var EMOJIS='😀 😍 🥰 😴 😋 🤗 👶 👧 👦 👩 👨 👵 👴 👪 🐶 🐱 🐭 🐰 🦊 🐻 🐼 🐨 🦁 🐮 🐷 🐸 🐵 🐔 🐧 🐦 🦆 🦉 🐴 🦄 🐝 🐢 🐟 🐬 🦋 🍎 🍌 🍇 🍓 🍉 🍪 🍞 🥛 🍼 🧃 🍕 🍦 🍭 🥕 ⚽ 🏀 🎈 🎁 🧸 🚗 🚌 🚂 ✈️ 🚀 🏠 🛏️ 🌈 ⭐ ❤️ 💧 🛁 🚽 🦷 👕 👟 🧦 🎵 📖'.split(' ');
 var NUM_TXT=['','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez'];
 var NUMEROS=[]; for(var n=1;n<=10;n++)NUMEROS.push({id:'n'+n,n:n,t:NUM_TXT[n],e:'🍎'});
@@ -636,6 +717,7 @@ function startSync(){updateCloudBadge();
   try{fbdb.ref('mivoz/custom').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>customTs){CUSTOM_WORDS=v.list||[];customTs=v.ts;save('mv_custom',CUSTOM_WORDS);save('mv_customTs',customTs);renderWorlds();if(parentOpen){buildCustomList();buildFotoList();buildRecList();buildWorldSelect();}}});}catch(e){}
   try{fbdb.ref('mivoz/worlds').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>worldsTs){CUSTOM_WORLDS=v.list||[];worldsTs=v.ts;save('mv_worlds',CUSTOM_WORLDS);save('mv_worldsTs',worldsTs);renderWorlds();if(parentOpen){buildWorldSelect();buildWorldsList();buildCustomList();}}});}catch(e){}
   try{fbdb.ref('mivoz/puzzles').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>puzzlesTs){PUZZLES=v.list||[];puzzlesTs=v.ts;save('mv_puzzles',PUZZLES);save('mv_puzzlesTs',puzzlesTs);if(parentOpen)buildPzAdmin();if(document.getElementById('puzzles').classList.contains('active'))renderPuzList();}});}catch(e){}
+  try{fbdb.ref('mivoz/cols').on('value',function(snap){var v=snap.val();if(v&&(v.ts||0)>colsTs){COLS=v.list||[];colsTs=v.ts;save('mv_cols',COLS);save('mv_colsTs',colsTs);if(parentOpen)buildColAdmin();if(document.getElementById('coloring').classList.contains('active'))renderColList();}});}catch(e){}
 }
 function pushProg(){if(!fbReady)return;try{fbdb.ref(PROG_PATH).set({stars:prog.stars||0,prizesShown:prog.prizesShown||0,ts:Date.now()});}catch(e){}}
 function updateCloudBadge(){var el=document.getElementById('cloudBadge');if(!el)return;
@@ -817,7 +899,7 @@ document.getElementById('pinKeys').addEventListener('click',function(e){var b=e.
   if(pinBuf.length<4){pinBuf+=b.textContent;renderPin();}
   if(pinBuf.length===4){if(pinBuf===cfg.pin){document.getElementById('pinOverlay').classList.remove('on');openParent();}
     else{document.getElementById('pinErr').textContent='PIN incorrecto';pinBuf='';setTimeout(renderPin,400);}}});
-function openParent(){parentOpen=true;show('parent');buildFotoList();buildRecList();buildCustomList();buildWorldsList();buildWorldSelect();buildPzAdmin();renderEmojiPick();renderWorldEmojiPick();updateProgUI();updateCloudBadge();}
+function openParent(){parentOpen=true;show('parent');buildMediaList();buildCustomList();buildWorldsList();buildWorldSelect();buildPzAdmin();buildColAdmin();renderEmojiPick();renderWorldEmojiPick();updateProgUI();updateCloudBadge();}
 document.getElementById('parentExit').addEventListener('click',function(){parentOpen=false;show('home');refreshHome();});
 document.querySelector('.tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
   document.querySelectorAll('.tabs button').forEach(function(x){x.classList.remove('on');});
@@ -833,23 +915,36 @@ function processImage(file,cb){var img=new Image(),url=URL.createObjectURL(file)
       for(var i=0;i<bin.length;i++)arr[i]=bin.charCodeAt(i);URL.revokeObjectURL(url);cb(new Blob([arr],{type:'image/jpeg'}));}catch(e){cb(null);}}};
   img.onerror=function(){URL.revokeObjectURL(url);cb(null);};img.src=url;}
 var pendingPhotoKey=null;
-function buildFotoList(){listKeys().then(function(keys){var html='';
-  WORLDS.forEach(function(w){html+='<div class="grp-h">'+w.e+' '+w.name+'</div>';
-    w.items.forEach(function(it){html+=fotoRow(it,keys);});});
-  if(CUSTOM_WORDS.length){html+='<div class="grp-h">✨ Mis palabras</div>';
-    CUSTOM_WORDS.forEach(function(it){html+=fotoRow(it,keys);});}
-  document.getElementById('fotoList').innerHTML=html;
-  wordsForMedia().forEach(function(it){var key='foto_'+it.id;if(keys.indexOf(key)>=0){getBlob(key).then(function(b){var im=document.getElementById('th_'+it.id);if(im&&b)im.src=URL.createObjectURL(b);});}});});}
-function fotoRow(it,keys){var key='foto_'+it.id,has=keys.indexOf(key)>=0;
-  var thumb=has?'<img class="thumb" id="th_'+it.id+'">':'<span class="em">'+it.e+'</span>';
-  return '<div class="rec-item" data-key="'+key+'"><span>'+thumb+'</span>'+
-    '<div class="nm">'+it.t+'<small class="'+(has?'':'none')+'">'+(has?'✓ foto puesta':'usa dibujo')+'</small></div>'+
-    '<button class="mini cam" data-a="cam">📷</button>'+
-    '<button class="mini del" data-a="del"'+(has?'':' disabled style="opacity:.4"')+'>🗑️</button></div>';}
-document.getElementById('fotoList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
-  var item=b.closest('.rec-item'),key=item.getAttribute('data-key'),a=b.getAttribute('data-a');
-  if(a==='cam'){pendingPhotoKey=key;document.getElementById('fotoInput').value='';document.getElementById('fotoInput').click();}
-  else if(a==='del'){delMedia(key).then(function(){toast('Foto borrada');buildFotoList();});}});
+function buildMediaList(){var el=document.getElementById('mediaList');if(!el)return;
+  listKeys().then(function(keys){var html='';
+    WORLDS.forEach(function(w){html+='<div class="grp-h">'+w.e+' '+w.name+'</div>';
+      w.items.forEach(function(it){html+=mediaRow(it,keys,true);});});
+    if(CUSTOM_WORDS.length){html+='<div class="grp-h">✨ Palabras creadas</div>';
+      CUSTOM_WORDS.forEach(function(it){html+=mediaRow(it,keys,true);});}
+    html+='<div class="grp-h">🔢 Números (solo voz)</div>';
+    NUMEROS.forEach(function(it){html+=mediaRow(it,keys,false);});
+    el.innerHTML=html;
+    wordsForMedia().forEach(function(it){var key='foto_'+it.id;if(keys.indexOf(key)>=0){getBlob(key).then(function(b){var im=document.getElementById('th_'+it.id);if(im&&b)im.src=URL.createObjectURL(b);});}});});}
+function mediaRow(it,keys,withFoto){var fk='foto_'+it.id,vk='voz_'+it.id;
+  var hasF=withFoto&&keys.indexOf(fk)>=0,hasV=keys.indexOf(vk)>=0;
+  var thumb=hasF?'<img class="thumb" id="th_'+it.id+'">':'<span class="em">'+it.e+'</span>';
+  var st=hasF&&hasV?'✓ foto · ✓ voz':(hasF?'✓ foto':(hasV?'✓ voz':'sin foto ni voz'));
+  var label=it.t+(it.n?' ('+it.n+')':'');
+  return '<div class="rec-item" data-id="'+it.id+'" data-txt="'+it.t+'"><span>'+thumb+'</span>'+
+    '<div class="nm">'+label+'<small class="'+((hasF||hasV)?'':'none')+'">'+st+'</small></div>'+
+    (withFoto?'<button class="mini cam" data-a="cam">📷</button>':'')+
+    '<button class="mini rec" data-a="rec">🎙️</button>'+
+    '<button class="mini play" data-a="play"'+(hasV?'':' disabled style="opacity:.4"')+'>▶</button>'+
+    '<button class="mini del" data-a="del"'+((hasF||hasV)?'':' disabled style="opacity:.4"')+'>🗑️</button></div>';}
+document.getElementById('mediaList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  var item=b.closest('.rec-item'),id=item.getAttribute('data-id'),txt=item.getAttribute('data-txt'),a=b.getAttribute('data-a');
+  if(a==='cam'){pendingPhotoKey='foto_'+id;document.getElementById('fotoInput').value='';document.getElementById('fotoInput').click();}
+  else if(a==='rec'){if(mediaRec&&mediaRec.state==='recording')stopRec();else startRec(b,'voz_'+id);}
+  else if(a==='play'){getBlob('voz_'+id).then(function(blob){if(blob){try{playURL(URL.createObjectURL(blob));}catch(e2){speakText(txt);}}else speakText(txt);});}
+  else if(a==='del'){delMedia('foto_'+id);delMedia('voz_'+id).then(function(){toast('Foto y voz borradas');buildMediaList();});}});
+/* alias de compatibilidad: todo lo que actualizaba las listas viejas actualiza la unificada */
+function buildFotoList(){buildMediaList();}
+function buildRecList(){buildMediaList();}
 document.getElementById('fotoInput').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f||!pendingPhotoKey)return;
   openCropper(f,function(blob){if(!blob)return;var key=pendingPhotoKey;saveMedia(key,blob).then(function(){buildFotoList();buildCustomList();});});});
 
@@ -895,31 +990,62 @@ function renderPick(containerId,selected,setter){var g=document.getElementById(c
   g.onclick=function(e){var b=e.target.closest('button');if(!b)return;setter(b.getAttribute('data-em'));renderPick(containerId,selected,setter);};}
 function renderEmojiPick(){renderPick('emojiPick',function(){return selEmoji;},function(v){selEmoji=v;});}
 function renderWorldEmojiPick(){renderPick('emojiPickWorld',function(){return selWorldEmoji;},function(v){selWorldEmoji=v;});}
-function buildWorldSelect(){var s=document.getElementById('wordWorld');if(!s)return;var h='';
+function buildWorldSelect(){var s=document.getElementById('wordWorld');if(!s)return;
+  var h='<option value="" selected>— Elige un mundo —</option>';
   WORLDS.forEach(function(w){h+='<option value="'+w.id+'">'+w.e+' '+w.name+'</option>';});
   CUSTOM_WORLDS.forEach(function(w){h+='<option value="'+w.id+'">'+w.e+' '+w.name+'</option>';});
   h+='<option value="mios">✨ Mis palabras</option>';s.innerHTML=h;}
 document.getElementById('addWordBtn').addEventListener('click',function(){var txt=(document.getElementById('newWordText').value||'').trim();
   if(!txt){toast('Escribe la palabra');return;}
-  var world=document.getElementById('wordWorld').value||'mios';
+  var world=document.getElementById('wordWorld').value;
+  if(!world){toast('⚠️ Primero elige a qué mundo va la palabra');return;}
   CUSTOM_WORDS.push({id:'c_'+Date.now(),t:txt,e:selEmoji,world:world});saveCustom();
-  document.getElementById('newWordText').value='';buildCustomList();buildFotoList();buildRecList();renderWorlds();
-  toast('¡"'+txt+'" agregada! Ponle foto y voz en 📷 y 🎙️');});
+  document.getElementById('newWordText').value='';document.getElementById('wordWorld').value='';
+  buildCustomList();buildFotoList();buildRecList();renderWorlds();
+  toast('¡"'+txt+'" agregada! Ponle foto y voz en 🖼️');});
+var editingWorldId=null;
 document.getElementById('addWorldBtn').addEventListener('click',function(){var nm=(document.getElementById('newWorldName').value||'').trim();
   if(!nm){toast('Escribe el nombre del mundo');return;}
+  if(editingWorldId){
+    CUSTOM_WORLDS.forEach(function(w){if(w.id===editingWorldId){w.name=nm;w.e=selWorldEmoji;}});
+    saveWorlds();exitWorldEdit();buildWorldSelect();buildWorldsList();buildCustomList();renderWorlds();
+    toast('Mundo actualizado ✓');return;
+  }
   var grad=WORLD_GRADS[CUSTOM_WORLDS.length%WORLD_GRADS.length];
   CUSTOM_WORLDS.push({id:'w_'+Date.now(),name:nm,e:selWorldEmoji,grad:grad});saveWorlds();
   document.getElementById('newWorldName').value='';buildWorldSelect();buildWorldsList();renderWorlds();
-  toast('¡Mundo "'+nm+'" creado! Ya puedes agregarle palabras arriba');});
+  toast('¡Mundo "'+nm+'" creado! Agrégale palabras en ➕');});
+document.getElementById('cancelWorldBtn').addEventListener('click',exitWorldEdit);
+function enterWorldEdit(w){editingWorldId=w.id;
+  document.getElementById('newWorldName').value=w.name;selWorldEmoji=w.e;renderWorldEmojiPick();
+  document.getElementById('worldFormTitle').textContent='✏️ Editando "'+w.name+'"';
+  document.getElementById('addWorldBtn').textContent='💾 Guardar cambios';
+  document.getElementById('cancelWorldBtn').style.display='block';}
+function exitWorldEdit(){editingWorldId=null;
+  document.getElementById('newWorldName').value='';selWorldEmoji='🏠';renderWorldEmojiPick();
+  document.getElementById('worldFormTitle').textContent='🌍 Crear un mundo nuevo';
+  document.getElementById('addWorldBtn').textContent='🌍 Crear mundo';
+  document.getElementById('cancelWorldBtn').style.display='none';}
 function buildWorldsList(){var el=document.getElementById('worldsList');if(!el)return;
-  if(!CUSTOM_WORLDS.length){el.innerHTML='';return;}
+  if(!CUSTOM_WORLDS.length){el.innerHTML='<div class="custom-empty">Aún no tienes mundos propios.</div>';return;}
   el.innerHTML='<div class="pick-lbl">Tus mundos:</div>'+CUSTOM_WORLDS.map(function(w){
-    return '<div class="world-item" data-id="'+w.id+'"><span class="we">'+w.e+'</span><div class="nm">'+w.name+'</div><button class="mini del" data-a="delw">🗑️</button></div>';}).join('');}
-document.getElementById('worldsList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.getAttribute('data-a')!=='delw')return;
-  var id=b.closest('.world-item').getAttribute('data-id');
-  CUSTOM_WORLDS=CUSTOM_WORLDS.filter(function(w){return w.id!==id;});
-  CUSTOM_WORDS.forEach(function(w){if(w.world===id)w.world='mios';});
-  saveWorlds();saveCustom();buildWorldSelect();buildWorldsList();buildCustomList();renderWorlds();toast('Mundo borrado (sus palabras pasaron a "Mis palabras")');});
+    var cnt=CUSTOM_WORDS.filter(function(x){return x.world===w.id;}).length;
+    return '<div class="world-item" data-id="'+w.id+'"><span class="we">'+w.e+'</span><div class="nm">'+w.name+'<small style="display:block;font-family:Nunito;font-weight:800;font-size:11px;color:var(--tinta-suave)">'+cnt+' palabra'+(cnt===1?'':'s')+'</small></div><button class="mini play" data-a="editw">✏️</button><button class="mini del" data-a="delw">🗑️</button></div>';}).join('');}
+document.getElementById('worldsList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
+  var id=b.closest('.world-item').getAttribute('data-id'),a=b.getAttribute('data-a');
+  var w=null;CUSTOM_WORLDS.forEach(function(x){if(x.id===id)w=x;});if(!w)return;
+  if(a==='editw'){enterWorldEdit(w);return;}
+  if(a==='delw'){
+    if(pendingWorldDel!==id){pendingWorldDel=id;toast('Toca 🗑️ otra vez para borrar "'+w.name+'" y sus palabras');setTimeout(function(){pendingWorldDel=null;},3500);return;}
+    pendingWorldDel=null;
+    var victims=CUSTOM_WORDS.filter(function(x){return x.world===id;});
+    victims.forEach(function(x){delMedia('foto_'+x.id);delMedia('voz_'+x.id);});
+    CUSTOM_WORDS=CUSTOM_WORDS.filter(function(x){return x.world!==id;});
+    CUSTOM_WORLDS=CUSTOM_WORLDS.filter(function(x){return x.id!==id;});
+    if(editingWorldId===id)exitWorldEdit();
+    saveWorlds();saveCustom();buildWorldSelect();buildWorldsList();buildCustomList();buildFotoList();buildRecList();renderWorlds();
+    toast('Mundo "'+w.name+'" eliminado con sus palabras');}});
+var pendingWorldDel=null;
 function worldNameOf(id){var bw=builtinWorld(id);if(bw)return bw.e+' '+bw.name;if(!id||id==='mios')return '✨ Mis palabras';
   var r='';CUSTOM_WORLDS.forEach(function(w){if(w.id===id)r=w.e+' '+w.name;});return r||'✨ Mis palabras';}
 function buildCustomList(){var el=document.getElementById('customList');if(!el)return;
@@ -951,12 +1077,6 @@ document.getElementById('puzGrid').addEventListener('click',function(e){var c=e.
 
 /* ============ PUZZLE: CREACIÓN (MODO PAPÁ) ============ */
 var pzDraft={foto:null,audio:null},pzPrevURL=null;
-document.getElementById('pzPickFoto').addEventListener('click',function(){document.getElementById('pzFotoInput').value='';document.getElementById('pzFotoInput').click();});
-document.getElementById('pzFotoInput').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
-  openCropper(f,function(blob){if(!blob)return;pzDraft.foto=blob;
-    if(pzPrevURL){try{URL.revokeObjectURL(pzPrevURL);}catch(e2){}}
-    pzPrevURL=URL.createObjectURL(blob);var pv=document.getElementById('pzPrev');pv.src=pzPrevURL;pv.style.display='block';
-    toast('Foto lista ✓');},'square');});
 var pzMediaRec=null,pzChunks=[];
 document.getElementById('pzRec').addEventListener('click',function(){var btn=this;
   if(pzMediaRec&&pzMediaRec.state==='recording'){try{pzMediaRec.stop();}catch(e){}btn.classList.remove('on');btn.textContent='🎙️ Grabar';return;}
@@ -1127,27 +1247,238 @@ function stopWinFx(){if(winConfT){clearInterval(winConfT);winConfT=null;}
 document.getElementById('winAgain').addEventListener('click',function(){stopWinFx();document.getElementById('winPop').classList.remove('on');if(pz.p)startPuzzle(pz.p);});
 document.getElementById('winHome').addEventListener('click',function(){stopWinFx();document.getElementById('winPop').classList.remove('on');show('puzzles');renderPuzList();});
 
-/* ============ GRABACIÓN ============ */
-function buildRecList(){listKeys().then(function(keys){var html='';
-  WORLDS.forEach(function(w){html+='<div class="grp-h">'+w.e+' '+w.name+'</div>';
-    w.items.forEach(function(it){html+=recRow(it,keys);});});
-  if(CUSTOM_WORDS.length){html+='<div class="grp-h">✨ Mis palabras</div>';
-    CUSTOM_WORDS.forEach(function(it){html+=recRow(it,keys);});}
-  html+='<div class="grp-h">🔢 Números</div>';
-  NUMEROS.forEach(function(it){html+=recRow(it,keys);});
-  document.getElementById('recList').innerHTML=html;});}
-function recRow(it,keys){var key='voz_'+it.id,has=keys.indexOf(key)>=0,label=it.t+(it.n?' ('+it.n+')':'');
-  return '<div class="rec-item" data-key="'+key+'" data-txt="'+it.t+'"><span class="em">'+it.e+'</span>'+
-    '<div class="nm">'+label+'<small class="'+(has?'':'none')+'">'+(has?'✓ voz grabada':'sin voz')+'</small></div>'+
-    '<button class="mini rec" data-a="rec">🎙️</button>'+
-    '<button class="mini play" data-a="play"'+(has?'':' disabled style="opacity:.4"')+'>▶</button>'+
-    '<button class="mini del" data-a="del"'+(has?'':' disabled style="opacity:.4"')+'>🗑️</button></div>';}
+/* ============ COLOREAR: LINE ART ============ */
+function makeLineArt(file,cb){
+  var url=URL.createObjectURL(file),img=new Image();
+  img.onload=function(){
+    var maxS=760,sc=Math.min(1,maxS/Math.max(img.width,img.height));
+    var W=Math.round(img.width*sc),H=Math.round(img.height*sc);
+    var cv=document.createElement('canvas');cv.width=W;cv.height=H;
+    var ctx=cv.getContext('2d');ctx.drawImage(img,0,0,W,H);URL.revokeObjectURL(url);
+    var d=ctx.getImageData(0,0,W,H).data,n=W*H;
+    var gray=new Float32Array(n);
+    for(var i=0;i<n;i++){var j=i*4;gray[i]=0.299*d[j]+0.587*d[j+1]+0.114*d[j+2];}
+    /* suavizado box blur 2 pasadas */
+    var tmp=new Float32Array(n);
+    function blur(src,dst){var x,y,idx;
+      for(y=0;y<H;y++)for(x=0;x<W;x++){var s=0,c=0;
+        for(var dy=-1;dy<=1;dy++){var yy=y+dy;if(yy<0||yy>=H)continue;
+          for(var dx=-1;dx<=1;dx++){var xx=x+dx;if(xx<0||xx>=W)continue;s+=src[yy*W+xx];c++;}}
+        dst[y*W+x]=s/c;}}
+    blur(gray,tmp);blur(tmp,gray);
+    /* sobel */
+    var mag=new Float32Array(n),sum=0;
+    for(var y2=1;y2<H-1;y2++)for(var x2=1;x2<W-1;x2++){
+      var p=y2*W+x2;
+      var gx=-gray[p-W-1]-2*gray[p-1]-gray[p+W-1]+gray[p-W+1]+2*gray[p+1]+gray[p+W+1];
+      var gy=-gray[p-W-1]-2*gray[p-W]-gray[p-W+1]+gray[p+W-1]+2*gray[p+W]+gray[p+W+1];
+      var m=Math.sqrt(gx*gx+gy*gy);mag[p]=m;sum+=m;}
+    var th=Math.min(120,Math.max(45,(sum/n)*2.4));
+    var mask=new Uint8Array(n);
+    for(var k=0;k<n;k++)if(mag[k]>th)mask[k]=1;
+    /* dilatar 1px para cerrar líneas */
+    var out=ctx.createImageData(W,H),od=out.data;
+    for(var y3=0;y3<H;y3++)for(var x3=0;x3<W;x3++){
+      var p3=y3*W+x3,on=mask[p3];
+      if(!on){
+        if(x3>0&&mask[p3-1])on=1;else if(x3<W-1&&mask[p3+1])on=1;
+        else if(y3>0&&mask[p3-W])on=1;else if(y3<H-1&&mask[p3+W])on=1;}
+      var q=p3*4;od[q]=45;od[q+1]=35;od[q+2]=30;od[q+3]=on?255:0;}
+    ctx.putImageData(out,0,0);
+    if(cv.toBlob)cv.toBlob(function(b){cb(b,W,H);},'image/png');
+    else{try{var du=cv.toDataURL('image/png'),bin=atob(du.split(',')[1]),ar=new Uint8Array(bin.length);
+      for(var z=0;z<bin.length;z++)ar[z]=bin.charCodeAt(z);cb(new Blob([ar],{type:'image/png'}),W,H);}catch(e){cb(null,0,0);}}
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);cb(null,0,0);};img.src=url;}
+
+/* ============ COLOREAR: ADMIN (MODO PAPÁ) ============ */
+var colDraft={img:null,audio:null,w:0,h:0},colPrevURL=null;
+document.getElementById('colPickFoto').addEventListener('click',function(){var inp=document.getElementById('pzFotoInput');inp.value='';inp.setAttribute('data-for','col');inp.click();});
+document.getElementById('pzPickFoto').addEventListener('click',function(){var inp=document.getElementById('pzFotoInput');inp.value='';inp.setAttribute('data-for','pz');inp.click();});
+document.getElementById('pzFotoInput').addEventListener('change',function(e){var f=e.target.files&&e.target.files[0];if(!f)return;
+  var dest=e.target.getAttribute('data-for')||'pz';
+  if(dest==='col'){
+    toast('Convirtiendo en lámina… ✏️');
+    makeLineArt(f,function(blob,w,h){if(!blob){toast('No se pudo procesar la imagen');return;}
+      colDraft.img=blob;colDraft.w=w;colDraft.h=h;
+      if(colPrevURL){try{URL.revokeObjectURL(colPrevURL);}catch(e2){}}
+      colPrevURL=URL.createObjectURL(blob);var pv=document.getElementById('colPrev');pv.src=colPrevURL;pv.style.display='block';
+      toast('¡Lámina lista! ✓ Mira la vista previa');});
+  }else{
+    openCropper(f,function(blob){if(!blob)return;pzDraft.foto=blob;
+      if(pzPrevURL){try{URL.revokeObjectURL(pzPrevURL);}catch(e2){}}
+      pzPrevURL=URL.createObjectURL(blob);var pv=document.getElementById('pzPrev');pv.src=pzPrevURL;pv.style.display='block';
+      toast('Foto lista ✓');},'square');
+  }});
+var colMediaRec=null,colChunks=[];
+document.getElementById('colRec').addEventListener('click',function(){var btn=this;
+  if(colMediaRec&&colMediaRec.state==='recording'){try{colMediaRec.stop();}catch(e){}btn.classList.remove('on');btn.textContent='🎙️ Grabar';return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Micrófono no disponible aquí.');return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    try{colMediaRec=new MediaRecorder(stream);}catch(e){toast('Tu navegador no soporta grabar.');stream.getTracks().forEach(function(t){t.stop();});return;}
+    colChunks=[];btn.classList.add('on');btn.textContent='⏹️ Parar';
+    colMediaRec.ondataavailable=function(ev){if(ev.data.size>0)colChunks.push(ev.data);};
+    colMediaRec.onstop=function(){colDraft.audio=new Blob(colChunks,{type:colChunks[0]?colChunks[0].type:'audio/webm'});
+      stream.getTracks().forEach(function(t){t.stop();});
+      var pb=document.getElementById('colPlay');pb.disabled=false;pb.style.opacity='1';toast('¡Voz de ánimo lista! ✓');};
+    colMediaRec.start();toast('Grabando… anima a tu hijo y toca Parar');
+  }).catch(function(){toast('Permiso de micrófono denegado');});});
+document.getElementById('colPlay').addEventListener('click',function(){if(colDraft.audio){try{playURL(URL.createObjectURL(colDraft.audio));}catch(e){}}});
+document.getElementById('colCreate').addEventListener('click',function(){
+  var nm=(document.getElementById('colName').value||'').trim();
+  if(!colDraft.img){toast('Primero elige la imagen 📷');return;}
+  if(!nm){toast('Escribe el nombre de la lámina');return;}
+  var id='l_'+Date.now(),img=colDraft.img,audio=colDraft.audio,w=colDraft.w,h=colDraft.h;
+  saveMedia('colimg_'+id,img).then(function(){
+    if(audio)return saveMedia('colvoz_'+id,audio);
+  }).then(function(){
+    COLS.push({id:id,name:nm,w:w,h:h});saveCols();buildColAdmin();
+    colDraft={img:null,audio:null,w:0,h:0};document.getElementById('colName').value='';
+    document.getElementById('colPrev').style.display='none';
+    var pb=document.getElementById('colPlay');pb.disabled=true;pb.style.opacity='.4';
+    toast('¡Lámina "'+nm+'" creada! 🎨');
+  });});
+function buildColAdmin(){var el=document.getElementById('colAdminList');if(!el)return;
+  if(!COLS.length){el.innerHTML='';return;}
+  el.innerHTML='<div class="pick-lbl">Tus láminas:</div>'+COLS.map(function(c){
+    return '<div class="rec-item" data-id="'+c.id+'"><img class="thumb" id="clt_'+c.id+'" style="background:#fff"><div class="nm">'+c.name+'</div><button class="mini del" data-a="delc">🗑️</button></div>';}).join('');
+  COLS.forEach(function(c){getBlob('colimg_'+c.id).then(function(b){var im=document.getElementById('clt_'+c.id);if(im&&b)im.src=URL.createObjectURL(b);});});}
+document.getElementById('colAdminList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b||b.getAttribute('data-a')!=='delc')return;
+  var id=b.closest('.rec-item').getAttribute('data-id');
+  COLS=COLS.filter(function(c){return c.id!==id;});saveCols();
+  delMedia('colimg_'+id);delMedia('colvoz_'+id);buildColAdmin();toast('Lámina borrada');});
+
+/* ============ COLOREAR: NAVEGACIÓN Y JUEGO ============ */
+document.getElementById('goColoring').addEventListener('click',function(){renderColList();show('coloring');});
+document.getElementById('coloringBack').addEventListener('click',function(){show('home');refreshHome();});
+document.getElementById('colplayBack').addEventListener('click',function(){stopColTimer();show('coloring');renderColList();});
+function renderColList(){var g=document.getElementById('colGrid');
+  if(!COLS.length){g.innerHTML='<div class="puz-empty">Aún no hay láminas.<br>Papá o mamá pueden crearlas en 🔒 → 🎨 Pintar</div>';return;}
+  g.innerHTML=COLS.map(function(c){return '<button class="puz-card" data-id="'+c.id+'"><img id="clh_'+c.id+'" style="background:#fff;object-fit:contain"><span class="pn">'+c.name+'</span></button>';}).join('');
+  COLS.forEach(function(c){getBlob('colimg_'+c.id).then(function(b){var im=document.getElementById('clh_'+c.id);if(im&&b)im.src=URL.createObjectURL(b);});});}
+document.getElementById('colGrid').addEventListener('click',function(e){var card=e.target.closest('.puz-card');if(!card)return;
+  var id=card.getAttribute('data-id'),c=null;COLS.forEach(function(x){if(x.id===id)c=x;});
+  if(c)startColoring(c);});
+
+var cp={c:null,W:0,H:0,tool:'fill',color:'#E53935',size:22,undo:[],vozURL:null,drawing:false,lineData:null,timer:null};
+var CP_COLORS=['#E53935','#FB8C00','#FDD835','#43A047','#9CCC65','#1E88E5','#4FC3F7','#8E24AA','#EC407A','#F8BBD0','#6D4C41','#FFCC80','#90A4AE','#37474F'];
+var CP_PHRASES=['¡Qué bonito te está quedando!','¡Sigue así, muy bien!','¡Me encanta cómo pintas!','¡Eres un gran artista!','¡Wow, qué colores tan lindos!'];
+function startColoring(c){
+  cp.c=c;cp.undo=[];cp.vozURL=null;cp.tool='fill';cp.color=CP_COLORS[0];
+  getBlob('colimg_'+c.id).then(function(b){
+    if(!b){toast('Esta lámina aún no descarga. Intenta en un momento.');return;}
+    var url=URL.createObjectURL(b),img=new Image();
+    img.onload=function(){
+      cp.W=c.w||img.width;cp.H=c.h||img.height;
+      var paint=document.getElementById('cpPaint'),lines=document.getElementById('cpLines');
+      paint.width=cp.W;paint.height=cp.H;lines.width=cp.W;lines.height=cp.H;
+      var maxW=Math.min(window.innerWidth*0.92,560);
+      var maxH=window.innerHeight*0.5;
+      var scv=Math.min(maxW/cp.W,maxH/cp.H);
+      var cssW=Math.round(cp.W*scv),cssH=Math.round(cp.H*scv);
+      paint.style.width=cssW+'px';paint.style.height=cssH+'px';
+      lines.style.width=cssW+'px';lines.style.height=cssH+'px';
+      document.getElementById('cpBox').style.width=cssW+'px';
+      document.getElementById('cpBox').style.height=cssH+'px';
+      var pctx=paint.getContext('2d');pctx.fillStyle='#fff';pctx.fillRect(0,0,cp.W,cp.H);
+      var lctx=lines.getContext('2d');lctx.clearRect(0,0,cp.W,cp.H);lctx.drawImage(img,0,0,cp.W,cp.H);
+      cp.lineData=lctx.getImageData(0,0,cp.W,cp.H).data;
+      document.getElementById('colTitle').textContent=c.name;
+      buildPalette();setTool('fill');setSizeUI(22);
+      show('colorplay');warmAudio();
+      /* precargar voz de ánimo en el gesto del toque */
+      getBlob('colvoz_'+c.id).then(function(vb){
+        if(vb){try{cp.vozURL=URL.createObjectURL(vb);
+          if(winAudio){winAudio.muted=true;winAudio.src=cp.vozURL;var p=winAudio.play();
+            if(p&&p.then)p.then(function(){try{winAudio.pause();winAudio.currentTime=0;winAudio.muted=false;}catch(e2){}}).catch(function(){try{winAudio.muted=false;}catch(e3){}});}
+        }catch(e){}}
+        startColTimer();
+      });
+      URL.revokeObjectURL(url);
+    };
+    img.src=url;});}
+function startColTimer(){stopColTimer();
+  cp.timer=setInterval(function(){
+    if(!document.getElementById('colorplay').classList.contains('active')){stopColTimer();return;}
+    if(cp.vozURL&&winAudio){try{winAudio.muted=false;winAudio.src=cp.vozURL;var p=winAudio.play();if(p&&p.catch)p.catch(function(){});return;}catch(e){}}
+    speakText(CP_PHRASES[Math.floor(Math.random()*CP_PHRASES.length)]);
+  },30000);}
+function stopColTimer(){if(cp.timer){clearInterval(cp.timer);cp.timer=null;}}
+function buildPalette(){var g=document.getElementById('cpPalette');
+  g.innerHTML=CP_COLORS.map(function(col){
+    return '<button class="pencil'+(col===cp.color?' on':'')+'" data-c="'+col+'" style="background:linear-gradient(180deg,'+col+' 0 8%,#EDD7AE 8% 20%,'+col+' 20%)"></button>';}).join('');}
+document.getElementById('cpPalette').addEventListener('click',function(e){var b=e.target.closest('.pencil');if(!b)return;
+  cp.color=b.getAttribute('data-c');buildPalette();
+  if(cp.tool==='eraser')setTool('brush');popSound();});
+function setTool(t){cp.tool=t;
+  document.getElementById('tFill').classList.toggle('on',t==='fill');
+  document.getElementById('tBrush').classList.toggle('on',t==='brush');
+  document.getElementById('tEraser').classList.toggle('on',t==='eraser');}
+document.getElementById('tFill').addEventListener('click',function(){setTool('fill');});
+document.getElementById('tBrush').addEventListener('click',function(){setTool('brush');});
+document.getElementById('tEraser').addEventListener('click',function(){setTool('eraser');});
+function setSizeUI(s){cp.size=s;
+  document.querySelectorAll('.cp-size').forEach(function(b){b.classList.toggle('on',+b.getAttribute('data-s')===s);});}
+document.querySelectorAll('.cp-size').forEach(function(b){b.addEventListener('click',function(){setSizeUI(+b.getAttribute('data-s'));if(cp.tool==='fill')setTool('brush');});});
+document.getElementById('tUndo').addEventListener('click',function(){
+  if(!cp.undo.length)return;
+  var pctx=document.getElementById('cpPaint').getContext('2d');
+  pctx.putImageData(cp.undo.pop(),0,0);});
+document.getElementById('tClear').addEventListener('click',function(){
+  pushUndo();var paint=document.getElementById('cpPaint'),pctx=paint.getContext('2d');
+  pctx.fillStyle='#fff';pctx.fillRect(0,0,cp.W,cp.H);});
+function pushUndo(){try{var pctx=document.getElementById('cpPaint').getContext('2d');
+  cp.undo.push(pctx.getImageData(0,0,cp.W,cp.H));if(cp.undo.length>8)cp.undo.shift();}catch(e){}}
+function cpCoords(e){var paint=document.getElementById('cpPaint'),r=paint.getBoundingClientRect();
+  var x=(e.touches?e.touches[0].clientX:e.clientX)-r.left;
+  var y=(e.touches?e.touches[0].clientY:e.clientY)-r.top;
+  return {x:Math.round(x*cp.W/r.width),y:Math.round(y*cp.H/r.height)};}
+(function(){var box=document.getElementById('cpBox');
+  function down(e){if(!cp.W)return;var pt=cpCoords(e);
+    if(cp.tool==='fill'){pushUndo();floodFill(pt.x,pt.y,cp.color);popSound();}
+    else{pushUndo();cp.drawing=true;var pctx=document.getElementById('cpPaint').getContext('2d');
+      pctx.lineCap='round';pctx.lineJoin='round';pctx.lineWidth=cp.size;
+      pctx.strokeStyle=(cp.tool==='eraser')?'#ffffff':cp.color;
+      pctx.beginPath();pctx.moveTo(pt.x,pt.y);pctx.lineTo(pt.x+0.1,pt.y+0.1);pctx.stroke();}
+    if(e.cancelable)e.preventDefault();}
+  function move(e){if(!cp.drawing)return;var pt=cpCoords(e);
+    var pctx=document.getElementById('cpPaint').getContext('2d');
+    pctx.lineTo(pt.x,pt.y);pctx.stroke();
+    if(e.cancelable)e.preventDefault();}
+  function up(){cp.drawing=false;}
+  box.addEventListener('touchstart',down,{passive:false});
+  box.addEventListener('touchmove',move,{passive:false});
+  box.addEventListener('touchend',up);
+  box.addEventListener('mousedown',down);
+  window.addEventListener('mousemove',move);
+  window.addEventListener('mouseup',up);
+})();
+function floodFill(sx,sy,hex){
+  var W=cp.W,H=cp.H;if(sx<0||sy<0||sx>=W||sy>=H)return;
+  var lin=cp.lineData;
+  function isLine(x,y){return lin[(y*W+x)*4+3]>70;}
+  if(isLine(sx,sy))return;
+  var paint=document.getElementById('cpPaint'),pctx=paint.getContext('2d');
+  var imgd=pctx.getImageData(0,0,W,H),d=imgd.data;
+  var fr=parseInt(hex.slice(1,3),16),fg=parseInt(hex.slice(3,5),16),fb=parseInt(hex.slice(5,7),16);
+  var si=(sy*W+sx)*4,tr=d[si],tg=d[si+1],tb=d[si+2];
+  if(Math.abs(tr-fr)+Math.abs(tg-fg)+Math.abs(tb-fb)<12)return;
+  function match(x,y){var i=(y*W+x)*4;
+    return Math.abs(d[i]-tr)+Math.abs(d[i+1]-tg)+Math.abs(d[i+2]-tb)<100&&!isLine(x,y);}
+  function paintPx(x,y){var i=(y*W+x)*4;d[i]=fr;d[i+1]=fg;d[i+2]=fb;d[i+3]=255;}
+  var stack=[[sx,sy]],guard=0,MAX=W*H*3;
+  while(stack.length&&guard<MAX){guard++;
+    var pos=stack.pop(),x=pos[0],y=pos[1];
+    if(!match(x,y))continue;
+    var xl=x;while(xl>0&&match(xl-1,y))xl--;
+    var xr=x;while(xr<W-1&&match(xr+1,y))xr++;
+    for(var xx=xl;xx<=xr;xx++){paintPx(xx,y);
+      if(y>0&&match(xx,y-1))stack.push([xx,y-1]);
+      if(y<H-1&&match(xx,y+1))stack.push([xx,y+1]);}}
+  pctx.putImageData(imgd,0,0);}
+
+/* ============ GRABACIÓN (motor) ============ */
 var mediaRec=null,chunks=[],recBtn=null,recKey=null;
-document.getElementById('recList').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;
-  var item=b.closest('.rec-item'),key=item.getAttribute('data-key'),txt=item.getAttribute('data-txt'),a=b.getAttribute('data-a');
-  if(a==='play'){getBlob(key).then(function(blob){if(blob){try{playURL(URL.createObjectURL(blob));}catch(e){speakText(txt);}}else speakText(txt);});}
-  else if(a==='del'){delMedia(key).then(function(){toast('Voz borrada');buildRecList();});}
-  else if(a==='rec'){if(mediaRec&&mediaRec.state==='recording')stopRec();else startRec(b,key);}});
 function startRec(btn,key){if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){toast('Micrófono no disponible aquí.');return;}
   navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
     try{mediaRec=new MediaRecorder(stream);}catch(e){toast('Tu navegador no soporta grabar.');stream.getTracks().forEach(function(t){t.stop();});return;}
